@@ -1,0 +1,49 @@
+---
+interface Props {
+  title: string;
+  slug: string;
+  image: string;
+  region: string;
+  highlights: string[];
+}
+
+const { title, slug, image, region, highlights } = Astro.props;
+---
+
+<a href={`/destinations/${slug}`} class="group block h-full">
+  <div class="relative rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 h-96 flex flex-col justify-end">
+    <img
+      src={image}
+      alt={title}
+      class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+      loading="lazy"
+    />
+
+    <div class="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent opacity-70" />
+
+    <div class="relative z-10 p-4 sm:p-6">
+      <div class="mb-4">
+        <span class="inline-block bg-secondary text-secondary-foreground text-xs font-semibold uppercase tracking-wide px-3 py-1 rounded-full">
+          {region}
+        </span>
+      </div>
+
+      <h3 class="font-heading font-bold text-white text-2xl sm:text-3xl mb-3">
+        {title}
+      </h3>
+
+      {highlights.length > 0 && (
+        <ul class="space-y-2">
+          {highlights.slice(0, 3).map((highlight) => (
+            <li class="text-white text-sm flex items-start gap-2">
+              <svg class="w-5 h-5 text-secondary flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+              </svg>
+              <span>{highlight}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</a>

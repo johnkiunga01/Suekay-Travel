@@ -1,0 +1,122 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import DestinationCard from '@/components/content/DestinationCard.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import CTASection from '@/components/content/CTASection.astro';
+
+const destinations = await getCollection('destinations');
+const sortedDestinations = destinations.sort((a, b) =>
+  a.data.title.localeCompare(b.data.title)
+);
+
+const regions = Array.from(
+  new Set(sortedDestinations.map(d => d.data.region))
+).sort();
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Destinations' },
+];
+---
+
+<BaseLayout
+  title="East African Destinations"
+  description="Explore breathtaking destinations in Kenya, Tanzania, Uganda, and Rwanda. Discover wildlife, culture, and natural wonders on guided safaris."
+>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <HeroSection
+    title="Explore East African Destinations"
+    subtitle="From the savannas of Kenya to the mountains of Rwanda, discover unforgettable landscapes and wildlife"
+    image="https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=1920"
+    ctaText="Plan Your Trip"
+    ctaUrl="/contact"
+  />
+
+  <section class="py-12 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="mb-12">
+        <div class="flex flex-wrap gap-3 justify-center">
+          <button
+            class="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-heading font-semibold transition-all hover:shadow-lg"
+            data-filter="all"
+            aria-current="page"
+          >
+            All Destinations
+          </button>
+          {regions.map(region => {
+            const count = sortedDestinations.filter(d => d.data.region === region).length;
+            const label = region.charAt(0).toUpperCase() + region.slice(1);
+            return (
+              <button
+                class="px-6 py-3 rounded-lg bg-card text-foreground font-heading font-semibold border-2 border-border transition-all hover:border-secondary hover:text-secondary"
+                data-filter={region}
+              >
+                {label} ({count})
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="destinations-grid">
+        {sortedDestinations.map(destination => (
+          <div class="destination-card" data-region={destination.data.region}>
+            <DestinationCard
+              title={destination.data.title}
+              slug={destination.slug}
+              image={destination.data.heroImage}
+              region={destination.data.region}
+              highlights={destination.data.highlights || []}
+            />
+          </div>
+        ))}
+      </div>
+
+      {sortedDestinations.length === 0 && (
+        <div class="text-center py-12">
+          <p class="text-muted-foreground text-lg">No destinations found. Please check back soon!</p>
+        </div>
+      )}
+    </div>
+  </section>
+
+  <CTASection
+    title="Can't Decide Which Destination?"
+    description="Let our travel experts help you plan the perfect East African adventure. We'll customize the ideal itinerary for you."
+    ctaText="Start Planning"
+    ctaUrl="/contact"
+    secondaryCtaText="Browse Tours"
+    secondaryCtaUrl="/tours"
+  />
+</BaseLayout>
+
+<script>
+  const filterButtons = document.querySelectorAll('[data-filter]');
+  const destinationCards = document.querySelectorAll('.destination-card');
+
+  filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      filterButtons.forEach(btn => {
+        btn.classList.remove('bg-primary', 'text-primary-foreground', 'shadow-lg');
+        btn.classList.add('bg-card', 'text-foreground', 'border-2', 'border-border');
+        btn.removeAttribute('aria-current');
+      });
+      button.classList.add('bg-primary', 'text-primary-foreground', 'shadow-lg');
+      button.classList.remove('bg-card', 'text-foreground', 'border-2', 'border-border');
+      button.setAttribute('aria-current', 'page');
+
+      const filter = button.getAttribute('data-filter');
+      destinationCards.forEach(card => {
+        const region = card.getAttribute('data-region');
+        if (filter === 'all' || region === filter) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+</script>

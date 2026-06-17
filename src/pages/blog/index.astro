@@ -1,0 +1,147 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import BlogCard from '@/components/content/BlogCard.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import { NewsletterForm } from '@/components/forms/NewsletterForm.tsx';
+
+const posts = await getCollection('blog');
+const sortedPosts = posts.sort((a, b) => new Date(b.data.publishedDate).getTime() - new Date(a.data.publishedDate).getTime());
+
+const featuredPost = sortedPosts.find(post => post.data.featured) || sortedPosts[0];
+const remainingPosts = sortedPosts.filter(post => post.slug !== featuredPost?.slug);
+
+// Extract unique categories
+const allCategories = Array.from(
+  new Set(sortedPosts.flatMap(post => post.data.categories || []))
+);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Blog', href: '/blog' },
+];
+
+const seoTitle = 'Safari Stories & Travel Tips - SueKay Tours';
+const seoDescription = 'Discover inspiring safari stories, travel tips, and expert guides for your East African adventure.';
+---
+
+<BaseLayout title={seoTitle} description={seoDescription}>
+  <main class="w-full">
+    <!-- Hero Section -->
+    <HeroSection
+      title="Safari Stories & Travel Tips"
+      subtitle="Discover inspiring journeys and expert travel guides for your next adventure"
+      backgroundImage="https://images.pexels.com/photos/325839/pexels-photo-325839.jpeg?auto=compress&cs=tinysrgb&w=1920"
+      height="medium"
+    />
+
+    <!-- Breadcrumbs -->
+    <div class="bg-background">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="bg-muted">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        {featuredPost && (
+          <div class="mb-16">
+            <h2 class="text-xl font-semibold text-primary mb-6 flex items-center gap-2">
+              <span class="inline-block w-1 h-6 bg-secondary rounded"></span>
+              Featured Story
+            </h2>
+            <div class="bg-card rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+              <BlogCard post={featuredPost} featured={true} />
+            </div>
+          </div>
+        )}
+
+        <div class="mb-12">
+          <h3 class="text-lg font-semibold text-foreground mb-4">Browse by Category</h3>
+          <div class="flex flex-wrap gap-3">
+            <button
+              class="px-6 py-2 rounded-full bg-primary text-white text-sm font-medium transition-all hover:shadow-md"
+              data-filter="all"
+            >
+              All Posts ({sortedPosts.length})
+            </button>
+            {allCategories.map(category => {
+              const count = sortedPosts.filter(post => post.data.categories?.includes(category)).length;
+              return (
+                <button
+                  class="px-6 py-2 rounded-full bg-card text-foreground text-sm font-medium border border-border transition-all hover:border-secondary hover:text-secondary"
+                  data-filter={category}
+                >
+                  {category} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div class="mb-16">
+          <h2 class="text-2xl lg:text-3xl font-bold text-foreground mb-8">Latest Articles</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="blog-grid">
+            {remainingPosts.map(post => (
+              <article class="bg-card rounded-lg shadow hover:shadow-lg transition-shadow" data-categories={JSON.stringify(post.data.categories || [])}>
+                <BlogCard post={post} />
+              </article>
+            ))}
+          </div>
+
+          {remainingPosts.length === 0 && (
+            <div class="text-center py-12">
+              <p class="text-muted-foreground text-lg">No blog posts yet. Check back soon!</p>
+            </div>
+          )}
+        </div>
+
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg p-8 lg:p-12 text-white">
+          <div class="max-w-2xl">
+            <h2 class="text-2xl lg:text-3xl font-bold mb-3">Get Travel Tips in Your Inbox</h2>
+            <p class="text-lg mb-8 text-blue-50">Subscribe to our newsletter for the latest safari stories and exclusive travel insights.</p>
+            <NewsletterForm />
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Category filtering functionality
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const blogGrid = document.getElementById('blog-grid');
+    const articles = blogGrid?.querySelectorAll('[data-categories]');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active button state
+        filterButtons.forEach(btn => {
+          btn.classList.remove('bg-primary', 'text-white');
+          btn.classList.add('bg-card', 'text-foreground', 'border', 'border-border');
+        });
+        button.classList.add('bg-primary', 'text-white');
+        button.classList.remove('bg-card', 'text-foreground', 'border', 'border-border');
+
+        // Filter articles
+        const filter = button.getAttribute('data-filter');
+        articles?.forEach(article => {
+          const categories = JSON.parse(article.getAttribute('data-categories') || '[]');
+          if (filter === 'all' || categories.includes(filter)) {
+            article.style.display = '';
+          } else {
+            article.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+
+  <style>
+    [data-filter]:hover {
+      @apply cursor-pointer;
+    }
+  </style>
+</BaseLayout>

@@ -1,0 +1,71 @@
+---
+interface Props {
+  title: string;
+  subtitle: string;
+  image: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  secondaryCtaText?: string;
+  secondaryCtaUrl?: string;
+  overlay?: boolean;
+  minHeight?: string;
+}
+
+const {
+  title,
+  subtitle,
+  image,
+  ctaText,
+  ctaUrl,
+  secondaryCtaText,
+  secondaryCtaUrl,
+  overlay = true,
+  minHeight = 'min-h-[70vh]',
+} = Astro.props;
+---
+
+<section class={`relative w-full ${minHeight} flex items-center justify-center overflow-hidden`}>
+  <div
+    class="absolute inset-0 z-0 bg-cover bg-center"
+    style={`background-image: url('${image}')`}
+    role="img"
+    aria-label={title}
+  />
+
+  {overlay && (
+    <div class="absolute inset-0 z-10 bg-primary-900/50 gradient-hero-bottom" />
+  )}
+
+  <div class="relative z-20 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="max-w-3xl mx-auto">
+      <h1 class="font-heading font-bold text-white mb-6 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl leading-tight text-balance">
+        {title}
+      </h1>
+
+      <p class="text-white/90 text-lg sm:text-xl lg:text-2xl mb-10 leading-relaxed max-w-2xl mx-auto">
+        {subtitle}
+      </p>
+
+      {(ctaText || secondaryCtaText) && (
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          {ctaText && ctaUrl && (
+            <a
+              href={ctaUrl}
+              class="inline-flex items-center justify-center px-8 py-3.5 sm:px-10 sm:py-4 bg-primary text-primary-foreground font-heading font-semibold rounded-lg hover:opacity-90 transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              {ctaText}
+            </a>
+          )}
+          {secondaryCtaText && secondaryCtaUrl && (
+            <a
+              href={secondaryCtaUrl}
+              class="inline-flex items-center justify-center px-8 py-3.5 sm:px-10 sm:py-4 bg-secondary text-secondary-foreground font-heading font-semibold rounded-lg hover:opacity-90 transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              {secondaryCtaText}
+            </a>
+          )}
+        </div>
+      )}
+    </div>
+  </div>
+</section>

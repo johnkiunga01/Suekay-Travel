@@ -1,0 +1,273 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import BlogCard from '@/components/content/BlogCard.astro';
+import { NewsletterForm } from '@/components/forms/NewsletterForm.tsx';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map(post => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+interface Props {
+  post: any;
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+// Get related posts (same category, different post)
+const allPosts = await getCollection('blog');
+const relatedPosts = allPosts
+  .filter(p =>
+    p.slug !== post.slug &&
+    p.data.categories?.some((cat: string) => post.data.categories?.includes(cat))
+  )
+  .slice(0, 3);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Blog', href: '/blog' },
+  { label: post.data.title, href: `/blog/${post.slug}` },
+];
+
+// Filter headings for table of contents (h2 and h3 only)
+const tocHeadings = headings.filter(h => h.depth === 2 || h.depth === 3);
+
+const seoTitle = `${post.data.title} - SueKay Tours Blog`;
+const seoDescription = post.data.excerpt || post.data.description || `Read ${post.data.title} on the SueKay Tours blog.`;
+
+// Extract author info
+const authorName = post.data.author?.name || 'SueKay Tours';
+const authorImage = post.data.author?.image || 'https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&w=200';
+
+// Format date
+const publishDate = new Date(post.data.pubDate);
+const formattedDate = publishDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+---
+
+<BaseLayout title={seoTitle} description={seoDescription} schema={[
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.data.title,
+    description: seoDescription,
+    image: post.data.heroImage,
+    datePublished: post.data.pubDate,
+    author: {
+      '@type': 'Person',
+      name: authorName,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'SueKay Tours & Travel',
+      logo: {
+        '@type': 'ImageObject',
+        url: 'https://suekaytours.com/logo.png',
+      },
+    },
+  },
+]}>
+  <main class="w-full">
+    <!-- Hero Section -->
+    <div class="relative h-96 overflow-hidden">
+      <img
+        src={post.data.heroImage || 'https://images.pexels.com/photos/325839/pexels-photo-325839.jpeg?auto=compress&cs=tinysrgb&w=1920'}
+        alt={post.data.title}
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-black/40 flex items-center">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div class="text-white">
+            <div class="flex flex-wrap gap-2 mb-4">
+              {post.data.categories?.map((category: string) => (
+                <span class="bg-secondary/90 px-3 py-1 rounded-full text-sm font-medium">
+                  {category}
+                </span>
+              ))}
+            </div>
+            <h1 class="text-4xl lg:text-5xl font-bold mb-4 leading-tight">
+              {post.data.title}
+            </h1>
+            <div class="flex items-center gap-4 flex-wrap">
+              <div class="flex items-center gap-3">
+                <img
+                  src={authorImage}
+                  alt={authorName}
+                  class="w-10 h-10 rounded-full object-cover"
+                />
+                <div>
+                  <p class="font-semibold">{authorName}</p>
+                  <p class="text-sm text-blue-100">{formattedDate}</p>
+                </div>
+              </div>
+              <span class="text-blue-100">·</span>
+              <span class="text-blue-100">{Math.ceil((post.body?.split(' ').length || 0) / 200)} min read</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Breadcrumbs -->
+    <div class="bg-background border-b border-border">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+    </div>
+
+    <!-- Article Content -->
+    <div class="bg-background">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <!-- Main Content -->
+          <article class="lg:col-span-3">
+            <div class="prose prose-lg max-w-none">
+              <Content />
+            </div>
+
+            <!-- Share Section -->
+            <div class="mt-12 pt-8 border-t border-border">
+              <h3 class="text-lg font-semibold text-foreground mb-4">Share this article</h3>
+              <div class="flex flex-wrap gap-3">
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${Astro.url}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  aria-label="Share on Facebook"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                  Facebook
+                </a>
+                <a
+                  href={`https://twitter.com/intent/tweet?url=${Astro.url}&text=${post.data.title}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg transition-colors"
+                  aria-label="Share on Twitter"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2s9 5 20 5a9.5 9.5 0 00-9-5.5c4.75 2.25 7-7 7-7a4.5 4.5 0 01-1.3-4.5z" stroke="currentColor" stroke-width="2" fill="none"/></svg>
+                  Twitter
+                </a>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(post.data.title + ' ' + Astro.url)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors"
+                  aria-label="Share on WhatsApp"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.6 6.4c-1.3-1.3-3-2-4.8-2-3.7 0-6.8 3-6.8 6.8 0 1.2.3 2.4.9 3.4L5 19l3.6-1.1c1 .6 2.1.9 3.3.9 3.7 0 6.8-3 6.8-6.8 0-1.8-.8-3.5-2.2-4.6zm-4.8 11c-1 0-2.1-.3-3-.8l-.2-.1-2.1.7.7-2.1-.1-.2c-.5-.9-.8-2-. 0-2.8 2.3-5 5-5 1.3 0 2.6.5 3.6 1.5 1 .9 1.5 2.2 1.5 3.5 0 2.8-2.3 5-5 5z"/></svg>
+                  WhatsApp
+                </a>
+                <button
+                  id="copy-link-btn"
+                  class="inline-flex items-center gap-2 px-4 py-2 bg-muted-foreground hover:bg-muted-foreground/90 text-white rounded-lg transition-colors"
+                  aria-label="Copy link to clipboard"
+                  data-url={Astro.url}
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.658 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                  Copy Link
+                </button>
+              </div>
+            </div>
+          </article>
+
+          <!-- Sidebar -->
+          <aside class="lg:col-span-1">
+            <!-- Table of Contents -->
+            {tocHeadings.length > 0 && (
+              <div class="bg-muted p-6 rounded-lg mb-8 sticky top-4">
+                <h3 class="text-lg font-semibold text-foreground mb-4">Table of Contents</h3>
+                <nav class="space-y-2">
+                  {tocHeadings.map(heading => (
+                    <a
+                      href={`#${heading.slug}`}
+                      class={`block text-sm transition-colors hover:text-secondary ${
+                        heading.depth === 2 ? 'text-foreground font-medium' : 'text-muted-foreground pl-4'
+                      }`}
+                    >
+                      {heading.text}
+                    </a>
+                  ))}
+                </nav>
+              </div>
+            )}
+
+            <!-- Author Card -->
+            <div class="bg-gradient-to-br from-primary/10 to-secondary/10 p-6 rounded-lg mb-8 border border-primary/20">
+              <img
+                src={authorImage}
+                alt={authorName}
+                class="w-20 h-20 rounded-full object-cover mx-auto mb-4"
+              />
+              <h3 class="text-lg font-semibold text-foreground text-center mb-2">{authorName}</h3>
+              <p class="text-sm text-muted-foreground text-center mb-4">
+                {post.data.author?.bio || 'Exploring the wonders of East Africa and sharing travel insights.'}
+              </p>
+              <a
+                href="/contact"
+                class="block text-center px-4 py-2 bg-secondary text-white rounded-lg hover:bg-secondary/90 transition-colors text-sm font-medium"
+              >
+                Get in Touch
+              </a>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Posts -->
+    {relatedPosts.length > 0 && (
+      <div class="bg-muted py-12 lg:py-20">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-12">Related Articles</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {relatedPosts.map(relatedPost => (
+              <article class="bg-card rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
+                <BlogCard post={relatedPost} />
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    <!-- Newsletter Section -->
+    <div class="bg-gradient-to-r from-primary to-secondary py-12 lg:py-20">
+      <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 text-white text-center">
+        <h2 class="text-3xl font-bold mb-3">Don't Miss Future Stories</h2>
+        <p class="text-lg mb-8 text-blue-50">Subscribe to get safari stories and travel tips delivered to your inbox.</p>
+        <NewsletterForm />
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Copy link functionality
+    const copyBtn = document.getElementById('copy-link-btn');
+    if (copyBtn) {
+      copyBtn.addEventListener('click', async () => {
+        const url = copyBtn.getAttribute('data-url');
+        try {
+          await navigator.clipboard.writeText(url);
+          const originalText = copyBtn.innerHTML;
+          copyBtn.innerHTML = '<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Copied!';
+          setTimeout(() => {
+            copyBtn.innerHTML = originalText;
+          }, 2000);
+        } catch (err) {
+          console.error('Failed to copy:', err);
+        }
+      });
+    }
+  </script>
+</BaseLayout>

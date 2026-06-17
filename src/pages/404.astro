@@ -1,0 +1,223 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+const currentYear = new Date().getFullYear();
+---
+
+<BaseLayout
+  title="404 - Page Not Found"
+  description="The page you're looking for doesn't exist. Let us help you get back on track."
+  hideHeader={false}
+  hideFooter={false}
+>
+  <!-- 404 Content Section -->
+  <section class="w-full min-h-screen flex items-center justify-center py-12 sm:py-16 lg:py-20 bg-gradient-to-br from-primary/10 via-white to-secondary/10">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto text-center">
+        <div class="mb-8 sm:mb-12">
+          <h1 class="font-heading font-black text-primary text-7xl sm:text-8xl lg:text-9xl mb-4 select-none drop-shadow-lg">
+            404
+          </h1>
+          <div class="w-24 h-1 bg-gradient-to-r from-primary to-secondary mx-auto" />
+        </div>
+
+        <div class="mb-8 sm:mb-12 flex justify-center">
+          <svg
+            class="w-32 h-32 sm:w-40 sm:h-40 text-primary opacity-80 animate-pulse"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <circle cx="12" cy="12" r="10" stroke-width="1.5" />
+
+            <path
+              d="M 12 4 L 12.5 12 L 12 14 L 11.5 12 Z"
+              fill="currentColor"
+              opacity="0.8"
+            />
+
+            <text
+              x="12"
+              y="6"
+              font-size="3"
+              font-weight="bold"
+              text-anchor="middle"
+              fill="currentColor"
+            >
+              N
+            </text>
+            <text
+              x="18"
+              y="13"
+              font-size="3"
+              font-weight="bold"
+              text-anchor="middle"
+              fill="currentColor"
+            >
+              E
+            </text>
+            <text
+              x="6"
+              y="13"
+              font-size="3"
+              font-weight="bold"
+              text-anchor="middle"
+              fill="currentColor"
+            >
+              W
+            </text>
+            <text
+              x="12"
+              y="20"
+              font-size="3"
+              font-weight="bold"
+              text-anchor="middle"
+              fill="currentColor"
+            >
+              S
+            </text>
+          </svg>
+        </div>
+
+        <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl lg:text-5xl mb-4 sm:mb-6">
+          Looks like you've wandered off the safari trail
+        </h2>
+
+        <p class="font-body text-muted-foreground text-lg sm:text-xl mb-8 sm:mb-10 leading-relaxed">
+          The page you're looking for doesn't exist or has been moved. Don't worry, our guides are here to help you find your way back!
+        </p>
+
+        <div class="mb-10 sm:mb-12 bg-card rounded-xl p-6 sm:p-8 border-2 border-primary/20">
+          <p class="font-body text-muted-foreground mb-4">
+            Try using the navigation menu above or search for what you're looking for:
+          </p>
+          <a
+            href="/"
+            class="inline-block px-6 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors duration-300 font-semibold"
+          >
+            Go to Homepage
+          </a>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <a
+            href="/"
+            class="relative group px-6 sm:px-8 py-4 sm:py-5 bg-card border-2 border-primary rounded-xl hover:border-secondary transition-all duration-300 shadow-md hover:shadow-lg"
+          >
+            <div class="flex items-center justify-center gap-3">
+              <svg
+                class="w-5 h-5 text-primary group-hover:text-secondary transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-3m0 0l7-4 7 4M5 9v10a1 1 0 001 1h12a1 1 0 001-1V9m-9 11l4-4m0 0l4 4m-4-4V3"
+                />
+              </svg>
+              <span class="font-heading font-semibold text-primary group-hover:text-secondary transition-colors">
+                Home
+              </span>
+            </div>
+          </a>
+
+          <a
+            href="/destinations"
+            class="relative group px-6 sm:px-8 py-4 sm:py-5 bg-card border-2 border-primary rounded-xl hover:border-secondary transition-all duration-300 shadow-md hover:shadow-lg"
+          >
+            <div class="flex items-center justify-center gap-3">
+              <svg
+                class="w-5 h-5 text-primary group-hover:text-secondary transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 20l-5.447-2.724A1 1 0 003 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6 3m-6-3v-13m6 3l5.447-2.724A1 1 0 0021 5.618v10.764a1 1 0 01-1.447.894L15 16m0 0l-6 3m6-3v13"
+                />
+              </svg>
+              <span class="font-heading font-semibold text-primary group-hover:text-secondary transition-colors">
+                Destinations
+              </span>
+            </div>
+          </a>
+
+          <a
+            href="/tours"
+            class="relative group px-6 sm:px-8 py-4 sm:py-5 bg-card border-2 border-primary rounded-xl hover:border-secondary transition-all duration-300 shadow-md hover:shadow-lg"
+          >
+            <div class="flex items-center justify-center gap-3">
+              <svg
+                class="w-5 h-5 text-primary group-hover:text-secondary transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+              <span class="font-heading font-semibold text-primary group-hover:text-secondary transition-colors">
+                Tours
+              </span>
+            </div>
+          </a>
+
+          <a
+            href="/contact"
+            class="relative group px-6 sm:px-8 py-4 sm:py-5 bg-card border-2 border-primary rounded-xl hover:border-secondary transition-all duration-300 shadow-md hover:shadow-lg"
+          >
+            <div class="flex items-center justify-center gap-3">
+              <svg
+                class="w-5 h-5 text-primary group-hover:text-secondary transition-colors"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                />
+              </svg>
+              <span class="font-heading font-semibold text-primary group-hover:text-secondary transition-colors">
+                Contact
+              </span>
+            </div>
+          </a>
+        </div>
+
+        <div class="mt-12 sm:mt-16 pt-8 sm:pt-12 border-t border-primary/20">
+          <p class="font-body text-muted-foreground text-sm italic">
+            "In the vast savanna of the web, sometimes paths don't lead where expected. But every adventure teaches us something new."
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+</style>

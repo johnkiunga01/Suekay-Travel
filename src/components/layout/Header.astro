@@ -1,0 +1,141 @@
+---
+const navItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Destinations', href: '/destinations' },
+  { label: 'Tours', href: '/tours' },
+  {
+    label: 'Services',
+    href: '/services/safaris',
+    children: [
+      { label: 'Safaris', href: '/services/safaris' },
+      { label: 'Corporate Travel', href: '/services/corporate-travel' },
+      { label: 'Team Building', href: '/services/team-building' },
+      { label: 'Vehicle Hire', href: '/services/vehicle-hire' },
+      { label: 'Airport Transfers', href: '/services/airport-transfers' },
+      { label: 'Beach Holidays', href: '/services/beach-holidays' },
+    ],
+  },
+  { label: 'Gallery', href: '/gallery' },
+  { label: 'Blog', href: '/blog' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/contact' },
+];
+---
+
+<header class="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-lg supports-[backdrop-filter]:bg-background/60">
+  <div class="container mx-auto flex h-16 items-center justify-between px-4 lg:px-8">
+    <!-- Logo -->
+    <a href="/" class="flex items-center gap-2 group">
+      <div class="flex items-center">
+        <span class="text-xl font-heading font-bold text-primary">Sue<span class="text-secondary">Kay</span></span>
+        <span class="ml-1 text-sm font-heading text-muted-foreground hidden sm:inline">Tours & Travel</span>
+      </div>
+    </a>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden lg:flex items-center gap-1" aria-label="Main navigation">
+      {navItems.map((item) => (
+        item.children ? (
+          <div class="relative group">
+            <a
+              href={item.href}
+              class="flex items-center gap-1 px-3 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-md hover:bg-accent"
+            >
+              {item.label}
+              <svg class="h-3 w-3 opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </a>
+            <div class="absolute left-0 top-full pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+              <div class="min-w-[200px] rounded-lg border bg-popover p-2 shadow-md">
+                {item.children.map((child) => (
+                  <a
+                    href={child.href}
+                    class="block px-3 py-2 text-sm rounded-md hover:bg-accent hover:text-primary transition-colors"
+                  >
+                    {child.label}
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <a
+            href={item.href}
+            class="px-3 py-2 text-sm font-medium text-foreground/80 hover:text-primary transition-colors rounded-md hover:bg-accent"
+          >
+            {item.label}
+          </a>
+        )
+      ))}
+    </nav>
+
+    <!-- Desktop Actions -->
+    <div class="hidden lg:flex items-center gap-3">
+      <a
+        href="/contact"
+        class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary-600 transition-colors"
+      >
+        Request Quote
+      </a>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button
+      id="mobile-menu-btn"
+      class="lg:hidden inline-flex items-center justify-center rounded-md p-2 text-foreground hover:bg-accent transition-colors"
+      aria-label="Toggle menu"
+      aria-expanded="false"
+    >
+      <svg id="menu-open-icon" class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+      <svg id="menu-close-icon" class="h-6 w-6 hidden" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- Mobile Navigation -->
+  <div id="mobile-menu" class="lg:hidden hidden border-t bg-background">
+    <div class="container mx-auto px-4 py-4 space-y-1">
+      {navItems.map((item) => (
+        item.children ? (
+          <div class="space-y-1">
+            <a href={item.href} class="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+              {item.label}
+            </a>
+            <div class="pl-4 space-y-1">
+              {item.children.map((child) => (
+                <a href={child.href} class="block px-3 py-2 text-sm text-muted-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+                  {child.label}
+                </a>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <a href={item.href} class="block px-3 py-2 text-sm font-medium text-foreground hover:text-primary hover:bg-accent rounded-md transition-colors">
+            {item.label}
+          </a>
+        )
+      ))}
+      <div class="pt-4 border-t">
+        <a
+          href="/contact"
+          class="inline-flex w-full items-center justify-center rounded-md bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground shadow hover:bg-primary-600 transition-colors"
+        >
+          Request Quote
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const openIcon = document.getElementById('menu-open-icon');
+  const closeIcon = document.getElementById('menu-close-icon');
+
+  btn?.addEventListener('click', () => {
+    const isOpen = !menu?.classList.contains('hidden');
+    menu?.classList.toggle('hidden');
+    openIcon?.classList.toggle('hidden');
+    closeIcon?.classList.toggle('hidden');
+    btn.setAttribute('aria-expanded', String(!isOpen));
+  });
+</script>

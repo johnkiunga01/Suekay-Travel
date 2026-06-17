@@ -1,0 +1,440 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import TourCard from '@/components/content/TourCard.astro';
+import DestinationCard from '@/components/content/DestinationCard.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import TestimonialCarousel from '@/components/content/TestimonialCarousel.tsx';
+import FAQAccordion from '@/components/content/FAQAccordion.astro';
+import { NewsletterForm } from '@/components/forms/NewsletterForm.tsx';
+import { TripPlannerWizard } from '@/components/forms/TripPlannerWizard.tsx';
+import BlogCard from '@/components/content/BlogCard.astro';
+import { getCollection } from 'astro:content';
+
+const tours = await getCollection('tours');
+const destinations = await getCollection('destinations');
+const testimonials = await getCollection('testimonials');
+const faqs = await getCollection('faqs');
+const blog = await getCollection('blog');
+
+const featuredTours = tours.filter(t => t.data.featured).slice(0, 6);
+const featuredDestinations = destinations.filter(d => d.data.featured).slice(0, 6);
+const featuredTestimonials = testimonials.filter(t => t.data.featured).slice(0, 8);
+const generalFaqs = faqs.filter(f => f.data.category === 'general').slice(0, 5);
+const recentBlog = blog.filter(b => !b.data.draft).sort((a, b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime()).slice(0, 3);
+
+const avgRating = testimonials.length > 0
+  ? (testimonials.reduce((sum, t) => sum + t.data.rating, 0) / testimonials.length).toFixed(1)
+  : 4.8;
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TravelAgency',
+    name: 'SueKay Tours & Travel',
+    description: 'Premium East African safaris, corporate travel, team building, and transport services',
+    url: 'https://suekaytours.com',
+    sameAs: [
+      'https://facebook.com/suekaytours',
+      'https://instagram.com/suekaytours',
+      'https://twitter.com/suekaytours',
+    ],
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: 'Nairobi',
+      addressCountry: 'KE',
+    },
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'Customer Service',
+      email: 'info@suekaytours.com',
+    },
+    areaServed: ['Kenya', 'Tanzania', 'Uganda', 'Rwanda'],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'SueKay Tours & Travel',
+    url: 'https://suekaytours.com',
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: avgRating,
+      ratingCount: testimonials.length,
+    },
+  },
+];
+---
+
+<BaseLayout
+  title="Home"
+  description="Discover East Africa's extraordinary wilderness with SueKay Tours & Travel. Premium safaris, team building, corporate travel, and transport services across Kenya, Tanzania, Uganda, and Rwanda."
+  schema={schema}
+>
+  <HeroSection
+    title="Discover East Africa's Extraordinary Wilderness"
+    subtitle="Experience unforgettable safaris, team building adventures, and premium travel services across Kenya, Tanzania, Uganda, and Rwanda"
+    image="https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1920"
+    ctaText="Explore Safaris"
+    ctaUrl="/tours"
+    secondaryCtaText="Plan Your Trip"
+    secondaryCtaUrl="#trip-planner"
+    minHeight="min-h-screen"
+  />
+
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Explore Our Featured Destinations
+        </h2>
+        <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Discover the most breathtaking locations across East Africa
+        </p>
+      </div>
+
+      {featuredDestinations.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {featuredDestinations.map((dest) => (
+            <DestinationCard
+              title={dest.data.title}
+              slug={dest.slug}
+              image={dest.data.heroImage}
+              region={dest.data.region}
+              highlights={dest.data.highlights || []}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-muted-foreground text-lg">Featured destinations coming soon</p>
+        </div>
+      )}
+
+      <div class="text-center mt-10">
+        <a href="/destinations" class="inline-flex items-center gap-2 text-secondary font-heading font-semibold hover:underline">
+          View all destinations
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Popular Tours & Experiences
+        </h2>
+        <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Choose from our carefully curated selection of unforgettable adventures
+        </p>
+      </div>
+
+      {featuredTours.length > 0 ? (
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {featuredTours.map((tour) => (
+            <TourCard
+              title={tour.data.title}
+              slug={tour.slug}
+              image={tour.data.heroImage}
+              duration={tour.data.duration}
+              price={tour.data.price}
+              priceUnit={tour.data.priceUnit}
+              destination={tour.data.destination}
+              difficulty={tour.data.difficulty}
+              category={tour.data.category}
+            />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-12">
+          <p class="text-muted-foreground text-lg">Tours coming soon</p>
+        </div>
+      )}
+
+      <div class="text-center mt-10">
+        <a href="/tours" class="inline-flex items-center justify-center px-8 py-3 bg-primary text-primary-foreground font-heading font-semibold rounded-lg hover:opacity-90 transition-all duration-300 hover:scale-105">
+          View All Tours
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Our Services
+        </h2>
+        <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Comprehensive travel solutions for every occasion
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+        <a href="/services/safaris" class="group">
+          <div class="h-full bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col border border-border hover:border-secondary/50">
+            <div class="mb-4">
+              <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-foreground text-xl sm:text-2xl mb-2">Safaris</h3>
+            <p class="text-muted-foreground flex-grow">Immersive wildlife safaris across East Africa's most iconic national parks and reserves.</p>
+          </div>
+        </a>
+
+        <a href="/services/corporate-travel" class="group">
+          <div class="h-full bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col border border-border hover:border-secondary/50">
+            <div class="mb-4">
+              <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 0a2 2 0 100 4m0-4a2 2 0 110 4m-6 0a2 2 0 100 4m0-4a2 2 0 110 4" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-foreground text-xl sm:text-2xl mb-2">Corporate Travel</h3>
+            <p class="text-muted-foreground flex-grow">Professional travel solutions designed for companies and organizations worldwide.</p>
+          </div>
+        </a>
+
+        <a href="/services/team-building" class="group">
+          <div class="h-full bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col border border-border hover:border-secondary/50">
+            <div class="mb-4">
+              <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-foreground text-xl sm:text-2xl mb-2">Team Building</h3>
+            <p class="text-muted-foreground flex-grow">Engaging experiences that strengthen team bonds and create lasting memories.</p>
+          </div>
+        </a>
+
+        <a href="/services/vehicle-hire" class="group">
+          <div class="h-full bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col border border-border hover:border-secondary/50">
+            <div class="mb-4">
+              <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17h8M8 17v4m8-4v4m-8-4h8m-8 0H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 8h6.528a2 2 0 011.789 1.106l3.5 7A2 2 0 0118.764 17H16" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-foreground text-xl sm:text-2xl mb-2">Vehicle Hire</h3>
+            <p class="text-muted-foreground flex-grow">Premium vehicle rentals for self-drive adventures and comfortable group travel.</p>
+          </div>
+        </a>
+
+        <a href="/services/airport-transfers" class="group">
+          <div class="h-full bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col border border-border hover:border-secondary/50">
+            <div class="mb-4">
+              <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-foreground text-xl sm:text-2xl mb-2">Airport Transfers</h3>
+            <p class="text-muted-foreground flex-grow">Reliable and comfortable transportation to and from major airports.</p>
+          </div>
+        </a>
+
+        <a href="/services/beach-holidays" class="group">
+          <div class="h-full bg-card rounded-lg shadow-md hover:shadow-xl transition-all duration-300 p-6 sm:p-8 flex flex-col border border-border hover:border-secondary/50">
+            <div class="mb-4">
+              <svg class="w-12 h-12 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-foreground text-xl sm:text-2xl mb-2">Beach Holidays</h3>
+            <p class="text-muted-foreground flex-grow">Tropical getaways to stunning coastal destinations with pristine beaches.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Why Choose SueKay
+        </h2>
+        <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Experience the difference with our trusted expertise and exceptional service
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div class="bg-card rounded-lg p-6 sm:p-8 text-center shadow-md hover:shadow-lg transition-shadow border border-border">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" /></svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-foreground text-lg sm:text-xl mb-2">Experienced Guides</h3>
+          <p class="text-muted-foreground text-sm">Knowledgeable and passionate guides with deep expertise in wildlife and culture.</p>
+        </div>
+
+        <div class="bg-card rounded-lg p-6 sm:p-8 text-center shadow-md hover:shadow-lg transition-shadow border border-border">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-foreground text-lg sm:text-xl mb-2">Custom Itineraries</h3>
+          <p class="text-muted-foreground text-sm">Tailored travel plans designed to match your interests and preferences perfectly.</p>
+        </div>
+
+        <div class="bg-card rounded-lg p-6 sm:p-8 text-center shadow-md hover:shadow-lg transition-shadow border border-border">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-foreground text-lg sm:text-xl mb-2">Best Value</h3>
+          <p class="text-muted-foreground text-sm">Competitive pricing without compromising on quality or service excellence.</p>
+        </div>
+
+        <div class="bg-card rounded-lg p-6 sm:p-8 text-center shadow-md hover:shadow-lg transition-shadow border border-border">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-foreground text-lg sm:text-xl mb-2">24/7 Support</h3>
+          <p class="text-muted-foreground text-sm">Round-the-clock customer support to assist you whenever you need help.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="trip-planner" class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-14">
+        <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Plan Your Perfect Trip
+        </h2>
+        <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+          Let our expert travel planners design your ideal adventure
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto">
+        <TripPlannerWizard client:load />
+      </div>
+    </div>
+  </section>
+
+  {featuredTestimonials.length > 0 && (
+    <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 sm:mb-16">
+          <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+            What Our Travelers Say
+          </h2>
+          <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Real experiences from our valued customers
+          </p>
+        </div>
+
+        <TestimonialCarousel
+          client:load
+          testimonials={featuredTestimonials.map(t => ({
+            author: t.data.author,
+            content: t.data.content,
+            rating: t.data.rating,
+            tourName: t.data.tourName,
+            company: t.data.company,
+            role: t.data.role,
+            avatar: t.data.avatar,
+          }))}
+        />
+      </div>
+    </section>
+  )}
+
+  {recentBlog.length > 0 && (
+    <section class="py-12 sm:py-16 lg:py-20 bg-background">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 sm:mb-16">
+          <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+            Travel Insights & Tips
+          </h2>
+          <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Stay updated with our latest travel advice and destination guides
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+          {recentBlog.map((post) => (
+            <BlogCard
+              title={post.data.title}
+              slug={post.slug}
+              image={post.data.heroImage || 'https://images.pexels.com/photos/325839/pexels-photo-325839.jpeg?auto=compress&cs=tinysrgb&w=800'}
+              category={post.data.category}
+              pubDate={post.data.pubDate}
+              description={post.data.description}
+              author={post.data.author}
+            />
+          ))}
+        </div>
+
+        <div class="text-center mt-10">
+          <a href="/blog" class="inline-flex items-center justify-center px-8 py-3 bg-secondary text-secondary-foreground font-heading font-semibold rounded-lg hover:opacity-90 transition-all duration-300 hover:scale-105">
+            Read More Articles
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  {generalFaqs.length > 0 && (
+    <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10 sm:mb-14">
+          <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl lg:text-5xl mb-4">
+            Frequently Asked Questions
+          </h2>
+          <p class="text-muted-foreground text-lg max-w-2xl mx-auto">
+            Find answers to common questions about our services
+          </p>
+        </div>
+
+        <FAQAccordion
+          faqs={generalFaqs.map(f => ({
+            question: f.data.question,
+            answer: f.data.answer,
+          }))}
+        />
+
+        <div class="text-center mt-10">
+          <a href="/faq" class="inline-flex items-center justify-center px-8 py-3 border-2 border-primary text-primary font-heading font-semibold rounded-lg hover:bg-primary hover:text-primary-foreground transition-all duration-300">
+            View All FAQs
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto">
+        <div class="text-center mb-8 sm:mb-10">
+          <h2 class="font-heading font-bold text-foreground text-3xl sm:text-4xl mb-4">
+            Stay Updated
+          </h2>
+          <p class="text-muted-foreground text-lg">
+            Subscribe to our newsletter for exclusive deals, travel tips, and new destination guides.
+          </p>
+        </div>
+
+        <NewsletterForm client:load />
+      </div>
+    </div>
+  </section>
+
+  <CTASection
+    title="Ready for Your African Adventure?"
+    description="Let us help you create memories that will last a lifetime. Contact our travel experts today to get started."
+    ctaText="Get in Touch"
+    ctaUrl="/contact"
+    secondaryCtaText="Explore All Tours"
+    secondaryCtaUrl="/tours"
+    variant="primary"
+  />
+</BaseLayout>

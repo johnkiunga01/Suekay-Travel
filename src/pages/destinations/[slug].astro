@@ -1,0 +1,319 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import FAQAccordion from '@/components/content/FAQAccordion.astro';
+import TourCard from '@/components/content/TourCard.astro';
+import { InquiryForm } from '@/components/forms/InquiryForm.tsx';
+
+export async function getStaticPaths() {
+  const destinations = await getCollection('destinations');
+  return destinations.map(destination => ({
+    params: { slug: destination.slug },
+    props: { destination },
+  }));
+}
+
+interface Props {
+  destination: any;
+}
+
+const { destination } = Astro.props;
+const { Content } = await render(destination);
+
+// Get tours for this destination
+const allTours = await getCollection('tours');
+const destinationTours = allTours.filter(
+  tour => tour.data.destination === destination.data.title
+).slice(0, 3);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Destinations', href: '/destinations' },
+  { label: destination.data.title, href: `/destinations/${destination.slug}` },
+];
+
+const seoTitle = `${destination.data.title} Safari Tours - SueKay Tours`;
+const seoDescription = destination.data.description || `Discover the best safari experiences and tours in ${destination.data.title}. Expert guides and unforgettable wildlife adventures.`;
+
+// Extract highlights
+const highlights = destination.data.highlights || [];
+const activities = destination.data.activities || [];
+const accommodations = destination.data.accommodations || [];
+const gallery = destination.data.gallery || [];
+const faq = destination.data.faq || [];
+const seasons = destination.data.seasons || [];
+---
+
+<BaseLayout title={seoTitle} description={seoDescription} schema={[
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: destination.data.title,
+    description: seoDescription,
+    image: destination.data.heroImage,
+    touristDestination: {
+      '@type': 'Place',
+      name: destination.data.title,
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'SueKay Tours & Travel',
+      url: 'https://suekaytours.com',
+    },
+  },
+]}>
+  <main class="w-full">
+    <!-- Hero Section -->
+    <div class="relative h-96 overflow-hidden">
+      <img
+        src={destination.data.heroImage}
+        alt={destination.data.title}
+        class="w-full h-full object-cover"
+      />
+      <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex items-end">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 w-full pb-8">
+          <h1 class="text-4xl lg:text-5xl font-bold text-white mb-2">{destination.data.title}</h1>
+          <p class="text-lg text-blue-100">{destination.data.region}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-background border-b border-border">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+    </div>
+
+    <div class="bg-background py-12 lg:py-16">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+          <div class="lg:col-span-2">
+            <h2 class="text-3xl font-bold text-foreground mb-4">Overview</h2>
+            <div class="prose prose-lg max-w-none text-foreground/70 mb-8">
+              <p>{destination.data.description}</p>
+            </div>
+
+            <!-- Key Details Grid -->
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
+              {destination.data.bestTime && (
+                <div class="bg-gradient-to-br from-primary/10 to-transparent p-4 rounded-lg border border-primary/20">
+                  <p class="text-sm text-muted-foreground mb-1">Best Time to Visit</p>
+                  <p class="font-semibold text-foreground">{destination.data.bestTime}</p>
+                </div>
+              )}
+              {destination.data.altitude && (
+                <div class="bg-gradient-to-br from-secondary/10 to-transparent p-4 rounded-lg border border-secondary/20">
+                  <p class="text-sm text-muted-foreground mb-1">Altitude</p>
+                  <p class="font-semibold text-foreground">{destination.data.altitude}</p>
+                </div>
+              )}
+              {destination.data.wildlife && (
+                <div class="bg-gradient-to-br from-primary/10 to-transparent p-4 rounded-lg border border-primary/20">
+                  <p class="text-sm text-muted-foreground mb-1">Main Wildlife</p>
+                  <p class="font-semibold text-foreground">{destination.data.wildlife}</p>
+                </div>
+              )}
+              {destination.data.population && (
+                <div class="bg-gradient-to-br from-secondary/10 to-transparent p-4 rounded-lg border border-secondary/20">
+                  <p class="text-sm text-muted-foreground mb-1">Population</p>
+                  <p class="font-semibold text-foreground">{destination.data.population}</p>
+                </div>
+              )}
+              {destination.data.area && (
+                <div class="bg-gradient-to-br from-primary/10 to-transparent p-4 rounded-lg border border-primary/20">
+                  <p class="text-sm text-muted-foreground mb-1">Area</p>
+                  <p class="font-semibold text-foreground">{destination.data.area}</p>
+                </div>
+              )}
+              {destination.data.language && (
+                <div class="bg-gradient-to-br from-secondary/10 to-transparent p-4 rounded-lg border border-secondary/20">
+                  <p class="text-sm text-muted-foreground mb-1">Language</p>
+                  <p class="font-semibold text-foreground">{destination.data.language}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div class="lg:col-span-1">
+            <div class="bg-gradient-to-br from-primary/5 to-secondary/5 p-6 rounded-lg border border-primary/10">
+              <h3 class="text-lg font-semibold text-foreground mb-4">Quick Facts</h3>
+              <ul class="space-y-3">
+                {destination.data.currency && (
+                  <li class="flex gap-3">
+                    <span class="text-secondary font-semibold min-w-fit">Currency:</span>
+                    <span class="text-foreground/70">{destination.data.currency}</span>
+                  </li>
+                )}
+                {destination.data.timezone && (
+                  <li class="flex gap-3">
+                    <span class="text-secondary font-semibold min-w-fit">Timezone:</span>
+                    <span class="text-foreground/70">{destination.data.timezone}</span>
+                  </li>
+                )}
+                {destination.data.visa && (
+                  <li class="flex gap-3">
+                    <span class="text-secondary font-semibold min-w-fit">Visa:</span>
+                    <span class="text-foreground/70">{destination.data.visa}</span>
+                  </li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {highlights.length > 0 && (
+      <div class="bg-muted py-12 lg:py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10 text-center">Top Highlights</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {highlights.map((highlight: any) => (
+              <div class="bg-card border border-border rounded-lg shadow hover:shadow-lg transition-shadow p-6">
+                {highlight.icon && (
+                  <div class="text-4xl mb-4">{highlight.icon}</div>
+                )}
+                <h3 class="text-xl font-semibold text-foreground mb-3">{highlight.title}</h3>
+                <p class="text-muted-foreground">{highlight.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {activities.length > 0 && (
+      <div class="bg-background py-12 lg:py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10">Activities & Experiences</h2>
+          <div class="space-y-6">
+            {activities.map((activity: any) => (
+              <div class="border-l-4 border-secondary pl-6 py-4">
+                <h3 class="text-xl font-semibold text-foreground mb-2">{activity.title}</h3>
+                <p class="text-muted-foreground">{activity.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {seasons.length > 0 && (
+      <div class="bg-gradient-to-r from-primary/5 to-secondary/5 py-12 lg:py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10">Best Time to Visit</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {seasons.map((season: any) => (
+              <div class="bg-card border border-border rounded-lg p-6 shadow hover:shadow-lg transition-shadow">
+                <h3 class="text-lg font-semibold text-primary mb-2">{season.name}</h3>
+                <p class="text-sm text-muted-foreground mb-3">{season.months}</p>
+                <p class="text-foreground/70 text-sm leading-relaxed">{season.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {accommodations.length > 0 && (
+      <div class="bg-background py-12 lg:py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10">Where to Stay</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            {accommodations.map((accommodation: any) => (
+              <div class="bg-gradient-to-br from-muted/30 to-card rounded-lg border border-border p-6 hover:shadow-lg transition-shadow">
+                <div class="flex items-start justify-between mb-4">
+                  <h3 class="text-xl font-semibold text-foreground">{accommodation.name}</h3>
+                  <span class="px-3 py-1 bg-secondary/20 text-secondary rounded-full text-sm font-medium">
+                    {accommodation.type}
+                  </span>
+                </div>
+                <p class="text-muted-foreground mb-4">{accommodation.description}</p>
+                <div class="flex items-center justify-between pt-4 border-t border-border">
+                  <div class="flex gap-1">
+                    {Array.from({ length: accommodation.rating || 5 }).map((_, i) => (
+                      <span key={i} class="text-yellow-400">★</span>
+                    ))}
+                  </div>
+                  {accommodation.priceRange && (
+                    <span class="text-primary font-semibold">{accommodation.priceRange}</span>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {gallery.length > 0 && (
+      <div class="bg-muted py-12 lg:py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10">Gallery</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {gallery.map((image: string) => (
+              <img
+                src={image}
+                alt={destination.data.title}
+                class="w-full h-64 object-cover rounded-lg shadow hover:shadow-lg transition-shadow cursor-pointer"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    )}
+
+    {destinationTours.length > 0 && (
+      <div class="bg-background py-12 lg:py-16">
+        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10">Recommended Tours</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {destinationTours.map(tour => (
+              <article class="bg-card border border-border rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden">
+                <TourCard
+                  slug={tour.slug}
+                  title={tour.data.title}
+                  description={tour.data.description}
+                  image={tour.data.heroImage}
+                  duration={tour.data.duration}
+                  price={tour.data.price}
+                  priceUnit={tour.data.priceUnit}
+                  difficulty={tour.data.difficulty}
+                />
+              </article>
+            ))}
+          </div>
+          <div class="text-center mt-10">
+            <a
+              href="/tours"
+              class="inline-flex items-center justify-center px-8 py-3 bg-secondary hover:bg-secondary/90 text-white font-semibold rounded-lg transition-colors"
+            >
+              View All Tours
+            </a>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {faq.length > 0 && (
+      <div class="bg-muted py-12 lg:py-16">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h2 class="text-3xl font-bold text-foreground mb-10 text-center">Frequently Asked Questions</h2>
+          <FAQAccordion items={faq} />
+        </div>
+      </div>
+    )}
+
+    <div class="bg-background py-12 lg:py-16">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl font-bold text-foreground mb-4 text-center">Plan Your Visit</h2>
+        <p class="text-lg text-muted-foreground text-center mb-10">
+          Have questions about {destination.data.title}? Our travel experts are here to help you plan the perfect trip.
+        </p>
+        <InquiryForm client:load destination={destination.data.title} />
+      </div>
+    </div>
+  </main>
+</BaseLayout>

@@ -1,0 +1,211 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'Gallery' },
+];
+
+// Gallery images organized by category
+const galleryImages = [
+  // Safari
+  { id: 1, category: 'safari', title: 'Lion Pride at Sunrise', image: 'https://images.pexels.com/photos/1599761/pexels-photo-1599761.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['safari', 'wildlife'] },
+  { id: 2, category: 'safari', title: 'Elephant Herd Migration', image: 'https://images.pexels.com/photos/2317904/pexels-photo-2317904.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['safari', 'wildlife'] },
+  { id: 3, category: 'safari', title: 'Giraffe in Natural Habitat', image: 'https://images.pexels.com/photos/247502/pexels-photo-247502.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['safari', 'wildlife'] },
+
+  // Wildlife
+  { id: 4, category: 'wildlife', title: 'African Leopard', image: 'https://images.pexels.com/photos/2768938/pexels-photo-2768938.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['wildlife', 'safari'] },
+  { id: 5, category: 'wildlife', title: 'Zebra Crossing', image: 'https://images.pexels.com/photos/433453/pexels-photo-433453.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['wildlife', 'safari'] },
+  { id: 6, category: 'wildlife', title: 'Cape Buffalo Portrait', image: 'https://images.pexels.com/photos/2788753/pexels-photo-2788753.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['wildlife', 'safari'] },
+
+  // Landscapes
+  { id: 7, category: 'landscapes', title: 'Mountain Ridge at Dusk', image: 'https://images.pexels.com/photos/3369569/pexels-photo-3369569.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['landscapes', 'nature'] },
+  { id: 8, category: 'landscapes', title: 'Golden Savanna Plains', image: 'https://images.pexels.com/photos/2303181/pexels-photo-2303181.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['landscapes', 'nature'] },
+  { id: 9, category: 'landscapes', title: 'Forest Canopy', image: 'https://images.pexels.com/photos/1695052/pexels-photo-1695052.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['landscapes', 'nature'] },
+
+  // Beach
+  { id: 10, category: 'beach', title: 'Tropical Sunset', image: 'https://images.pexels.com/photos/1629317/pexels-photo-1629317.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['beach', 'relaxation'] },
+  { id: 11, category: 'beach', title: 'Crystal Clear Waters', image: 'https://images.pexels.com/photos/1761279/pexels-photo-1761279.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['beach', 'relaxation'] },
+  { id: 12, category: 'beach', title: 'Palm Trees & Sand', image: 'https://images.pexels.com/photos/2889771/pexels-photo-2889771.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['beach', 'relaxation'] },
+
+  // Corporate
+  { id: 13, category: 'corporate', title: 'Team Building Activity', image: 'https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['corporate', 'team-building'] },
+  { id: 14, category: 'corporate', title: 'Conference Setup', image: 'https://images.pexels.com/photos/3184419/pexels-photo-3184419.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['corporate', 'professional'] },
+  { id: 15, category: 'corporate', title: 'Group Activities', image: 'https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg?auto=compress&cs=tinysrgb&w=800', tags: ['corporate', 'team-building'] },
+];
+
+const categories = [
+  { id: 'all', label: 'All', count: galleryImages.length },
+  { id: 'safari', label: 'Safari', count: galleryImages.filter(i => i.category === 'safari').length },
+  { id: 'wildlife', label: 'Wildlife', count: galleryImages.filter(i => i.category === 'wildlife').length },
+  { id: 'landscapes', label: 'Landscapes', count: galleryImages.filter(i => i.category === 'landscapes').length },
+  { id: 'beach', label: 'Beach', count: galleryImages.filter(i => i.category === 'beach').length },
+  { id: 'corporate', label: 'Corporate', count: galleryImages.filter(i => i.category === 'corporate').length },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ImageGallery',
+    name: 'SueKay Tours & Travel Gallery',
+    description: 'Photo gallery showcasing safaris, wildlife, landscapes, beaches, and corporate events in East Africa.',
+    url: 'https://suekaytours.com/gallery',
+  },
+];
+---
+
+<BaseLayout
+  title="Gallery"
+  description="Explore our photo gallery showcasing stunning safaris, incredible wildlife, breathtaking landscapes, and memorable travel experiences across East Africa."
+  schema={schema}
+>
+  <!-- Breadcrumbs -->
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <HeroSection
+    title="Our Safari Gallery"
+    subtitle="Discover the beauty and wonder of East Africa through our curated collection of images"
+    image="https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1920"
+    minHeight="min-h-[50vh]"
+  />
+
+  <!-- Gallery Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="mb-10 sm:mb-14">
+        <div class="flex flex-wrap gap-2 sm:gap-3 justify-center">
+          {categories.map((cat) => (
+            <button
+              onclick={`filterGallery('${cat.id}')`}
+              data-category={cat.id}
+              class={`px-4 sm:px-6 py-2 sm:py-3 rounded-full font-heading font-semibold text-sm sm:text-base transition-all duration-300 ${
+                cat.id === 'all'
+                  ? 'bg-primary text-white'
+                  : 'bg-muted text-foreground/70 hover:bg-muted'
+              }`}
+              id={`filter-${cat.id}`}
+            >
+              {cat.label}
+              <span class="ml-2 text-xs opacity-75">({cat.count})</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        {galleryImages.map((image) => (
+          <div
+            class="gallery-item aspect-square rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 cursor-pointer group"
+            data-category={image.category}
+            data-id={image.id}
+          >
+            <div class="relative h-full">
+              <img
+                src={image.image}
+                alt={image.title}
+                loading="lazy"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+              />
+
+              <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4 sm:p-6">
+                <div>
+                  <h3 class="font-heading font-bold text-white text-base sm:text-lg">
+                    {image.title}
+                  </h3>
+                  <div class="flex gap-2 mt-2">
+                    {image.tags.map((tag) => (
+                      <span class="inline-block bg-secondary/80 text-white text-xs px-2 py-1 rounded">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div id="empty-state" class="text-center py-12 hidden">
+        <svg class="w-12 h-12 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <p class="text-muted-foreground text-lg">
+          No images found in this category
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-4">
+          Ready to Experience This Beauty?
+        </h2>
+        <p class="font-body text-muted-foreground text-lg mb-8">
+          These images are just a glimpse of the unforgettable experiences waiting for you in East Africa.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a
+            href="/tours"
+            class="inline-block px-8 py-3 sm:px-10 sm:py-4 bg-primary text-white font-heading font-semibold rounded-lg hover:opacity-90 transition-all duration-300 hover:scale-105"
+          >
+            Explore Tours
+          </a>
+          <a
+            href="/contact"
+            class="inline-block px-8 py-3 sm:px-10 sm:py-4 border-2 border-primary text-primary font-heading font-semibold rounded-lg hover:bg-primary hover:text-white transition-all duration-300"
+          >
+            Plan Your Trip
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  function filterGallery(category: string) {
+    const items = document.querySelectorAll('.gallery-item');
+    const buttons = document.querySelectorAll('[data-category][class*="filter-"]');
+    const emptyState = document.getElementById('empty-state');
+    let visibleCount = 0;
+
+    // Update button styles
+    buttons.forEach(btn => {
+      const btnId = btn.id.replace('filter-', '');
+      if (btnId === category) {
+        btn.classList.add('bg-primary', 'text-white');
+        btn.classList.remove('bg-muted', 'text-foreground/70', 'hover:bg-muted');
+      } else {
+        btn.classList.remove('bg-primary', 'text-white');
+        btn.classList.add('bg-muted', 'text-foreground/70', 'hover:bg-muted');
+      }
+    });
+
+    // Filter items
+    items.forEach(item => {
+      const itemCategory = item.getAttribute('data-category');
+      if (category === 'all' || itemCategory === category) {
+        item.style.display = '';
+        visibleCount++;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    // Show/hide empty state
+    if (visibleCount === 0 && emptyState) {
+      emptyState.classList.remove('hidden');
+    } else if (emptyState) {
+      emptyState.classList.add('hidden');
+    }
+  }
+</script>
+
+<style>
+</style>

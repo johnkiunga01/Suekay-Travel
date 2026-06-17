@@ -1,0 +1,312 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import FAQAccordion from '@/components/content/FAQAccordion.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import { getCollection } from 'astro:content';
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'FAQ' },
+];
+
+// Fetch FAQs from collection
+const faqs = await getCollection('faqs');
+
+// Group FAQs by category
+const categories = [
+  { id: 'all', label: 'All', count: faqs.length },
+  { id: 'safaris', label: 'Safaris', count: faqs.filter(f => f.data.category === 'safaris').length },
+  { id: 'corporate', label: 'Corporate', count: faqs.filter(f => f.data.category === 'corporate').length },
+  { id: 'transport', label: 'Transport', count: faqs.filter(f => f.data.category === 'transport').length },
+  { id: 'general', label: 'General', count: faqs.filter(f => f.data.category === 'general').length },
+  { id: 'bookings', label: 'Bookings', count: faqs.filter(f => f.data.category === 'bookings').length },
+];
+
+// Get unique categories that have FAQs
+const availableCategories = categories.filter(cat =>
+  cat.id === 'all' || faqs.some(f => f.data.category === cat.id)
+);
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map(faq => ({
+      '@type': 'Question',
+      name: faq.data.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.data.answer,
+      },
+    })),
+  },
+];
+---
+
+<BaseLayout
+  title="Frequently Asked Questions"
+  description="Find answers to common questions about safaris, corporate travel, transport, bookings, and more. SueKay Tours & Travel FAQ guide."
+  schema={schema}
+>
+  <!-- Breadcrumbs -->
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <HeroSection
+    title="Frequently Asked Questions"
+    subtitle="Find answers to common questions about our services, bookings, and travel experiences"
+    image="https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1920"
+    minHeight="min-h-[50vh]"
+  />
+
+  <!-- FAQ Content Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-10 sm:mb-14">
+          <div class="flex flex-wrap gap-2 sm:gap-3 justify-center">
+            {availableCategories.map((cat) => (
+              <button
+                onclick={`filterFAQ('${cat.id}')`}
+                data-category={cat.id}
+                class={`px-4 sm:px-6 py-2 sm:py-3 rounded-full font-heading font-semibold text-sm sm:text-base transition-all duration-300 ${
+                  cat.id === 'all'
+                    ? 'bg-primary text-white'
+                    : 'bg-muted text-muted-foreground hover:bg-muted'
+                }`}
+                id={`faq-filter-${cat.id}`}
+              >
+                {cat.label}
+                <span class="ml-2 text-xs opacity-75">({cat.count})</span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {faqs.length > 0 ? (
+          <div>
+            {availableCategories.map((cat) => {
+              const categoryFaqs = faqs.filter(f => cat.id === 'all' ? true : f.data.category === cat.id)
+                .sort((a, b) => a.data.order - b.data.order);
+
+              return (
+                <div
+                  id={`category-${cat.id}`}
+                  class="mb-8 category-section"
+                  data-category={cat.id}
+                  style={cat.id === 'all' ? '' : 'display: none;'}
+                >
+                  {cat.id !== 'all' && (
+                    <h3 class="font-heading font-bold text-primary text-2xl mb-6">
+                      {cat.label}
+                    </h3>
+                  )}
+
+                  <div class="space-y-4">
+                    {categoryFaqs.map((faq) => (
+                      <details
+                        class="group bg-card rounded-lg border border-border overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 faq-item"
+                        data-category={faq.data.category}
+                      >
+                        <summary class="flex items-center justify-between cursor-pointer p-4 sm:p-6 font-heading font-semibold text-primary hover:bg-muted/20 transition-colors">
+                          <span class="text-base sm:text-lg pr-4">{faq.data.question}</span>
+                          <svg
+                            class="w-5 h-5 text-secondary flex-shrink-0 transition-transform duration-300 group-open:rotate-180"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 14l-7 7m0 0l-7-7m7 7V3"
+                            />
+                          </svg>
+                        </summary>
+
+                        <div class="border-t border-border">
+                          <p class="font-body text-muted-foreground p-4 sm:p-6 text-base leading-relaxed">
+                            {faq.data.answer}
+                          </p>
+                        </div>
+                      </details>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div class="text-center py-12">
+            <svg class="w-12 h-12 mx-auto text-muted-foreground mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <p class="text-muted-foreground text-lg mb-6">
+              FAQs coming soon! Check back later or contact us directly.
+            </p>
+            <a
+              href="/contact"
+              class="inline-block px-8 py-3 sm:px-10 sm:py-4 bg-primary text-white font-heading font-semibold rounded-lg hover:opacity-90 transition-all duration-300"
+            >
+              Contact Us
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Related Questions Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-3xl mx-auto text-center">
+        <h2 class="font-heading font-bold text-primary text-2xl sm:text-3xl mb-4">
+          Still Have Questions?
+        </h2>
+        <p class="font-body text-muted-foreground text-lg mb-8">
+          Couldn't find the answer you were looking for? Our team is ready to help!
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mb-8">
+          <a
+            href="mailto:info@suekaytours.com"
+            class="p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <div class="flex justify-center mb-4">
+              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-primary mb-2">
+              Email Support
+            </h3>
+            <p class="text-sm text-muted-foreground">
+              info@suekaytours.com
+            </p>
+          </a>
+
+          <a
+            href="tel:+254XXXXXXXXX"
+            class="p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <div class="flex justify-center mb-4">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-secondary mb-2">
+              Call Us
+            </h3>
+            <p class="text-sm text-muted-foreground">
+              +254 XXX XXX XXX
+            </p>
+          </a>
+
+          <a
+            href="/contact"
+            class="p-6 bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow"
+          >
+            <div class="flex justify-center mb-4">
+              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+              </svg>
+            </div>
+            <h3 class="font-heading font-bold text-primary mb-2">
+              Contact Form
+            </h3>
+            <p class="text-sm text-muted-foreground">
+              Get in touch with us
+            </p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <CTASection
+    title="Ready to Book Your Adventure?"
+    description="Browse our tours, get custom quotes, and start planning your unforgettable East African experience today."
+    ctaText="Explore Tours"
+    ctaUrl="/tours"
+    secondaryCtaText="Get in Touch"
+    secondaryCtaUrl="/contact"
+    variant="primary"
+  />
+</BaseLayout>
+
+<script>
+  function filterFAQ(category: string) {
+    const sections = document.querySelectorAll('.category-section');
+    const buttons = document.querySelectorAll('[id^="faq-filter-"]');
+
+    // Update button styles
+    buttons.forEach(btn => {
+      const btnCategory = btn.id.replace('faq-filter-', '');
+      if (btnCategory === category) {
+        btn.classList.add('bg-primary', 'text-white');
+        btn.classList.remove('bg-muted', 'text-muted-foreground', 'hover:bg-muted');
+      } else {
+        btn.classList.remove('bg-primary', 'text-white');
+        btn.classList.add('bg-muted', 'text-muted-foreground', 'hover:bg-muted');
+      }
+    });
+
+    // Show/hide sections
+    if (category === 'all') {
+      // Show all FAQs together
+      sections.forEach(section => {
+        section.style.display = '';
+      });
+
+      // Create a combined view
+      const allFaqsContainer = document.querySelector('[data-category="all"]');
+      if (allFaqsContainer) {
+        allFaqsContainer.style.display = '';
+      } else {
+        // Hide category-specific sections and show all items
+        sections.forEach(section => {
+          const sectionCategory = section.getAttribute('data-category');
+          if (sectionCategory === 'all') {
+            section.style.display = '';
+          } else {
+            section.style.display = 'none';
+          }
+        });
+
+        // Show all FAQ items across all categories
+        const allItems = document.querySelectorAll('.faq-item');
+        allItems.forEach(item => {
+          item.style.display = '';
+        });
+      }
+    } else {
+      // Show only selected category
+      sections.forEach(section => {
+        const sectionCategory = section.getAttribute('data-category');
+        if (sectionCategory === category || sectionCategory === 'all') {
+          section.style.display = sectionCategory === 'all' ? 'none' : '';
+        } else {
+          section.style.display = 'none';
+        }
+      });
+    }
+  }
+</script>
+
+<style>
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  details {
+    transition: box-shadow 0.3s ease;
+  }
+
+  details[open] {
+    box-shadow: 0 4px 12px hsl(var(--primary) / 0.1);
+  }
+</style>

@@ -1,0 +1,294 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import FAQAccordion from '@/components/content/FAQAccordion.astro';
+import { InquiryForm } from '@/components/forms/InquiryForm.tsx';
+import TourCard from '@/components/content/TourCard.astro';
+
+export async function getStaticPaths() {
+  const services = await getCollection('services');
+  return services.map(service => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+interface Props {
+  service: any;
+}
+
+const { service } = Astro.props;
+const { Content } = await service.render();
+
+// Get related tours for this service
+const tours = await getCollection('tours');
+const relatedTours = tours.filter(tour => {
+  const tourCategory = tour.data.category;
+  // Match tours based on service category
+  const serviceSlug = service.slug;
+
+  if (serviceSlug === 'safaris' && ['safari'].includes(tourCategory)) return true;
+  if (serviceSlug === 'beach-holidays' && ['beach'].includes(tourCategory)) return true;
+  if (serviceSlug === 'corporate-travel' && ['corporate'].includes(tourCategory)) return true;
+  if (serviceSlug === 'team-building' && ['corporate', 'adventure'].includes(tourCategory)) return true;
+  if (serviceSlug === 'airport-transfers' && tourCategory) return true;
+  if (serviceSlug === 'vehicle-hire' && tourCategory) return true;
+
+  return false;
+}).slice(0, 3);
+
+// Breadcrumb items
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: service.data.title },
+];
+---
+
+<BaseLayout
+  title={service.data.title}
+  description={service.data.description}
+  image={service.data.heroImage}
+>
+  <!-- Breadcrumbs -->
+  <Breadcrumbs items={breadcrumbs} />
+
+  <!-- Hero Section -->
+  <section class="relative w-full py-12 sm:py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-primary/10 to-secondary/10">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+        <div>
+          <h1 class="font-heading font-bold text-primary text-4xl sm:text-5xl lg:text-6xl mb-4 sm:mb-6">
+            {service.data.title}
+          </h1>
+          <p class="font-body text-foreground/70 text-lg sm:text-xl mb-8 leading-relaxed">
+            {service.data.description}
+          </p>
+          <a
+            href="#inquiry-form"
+            class="inline-block px-8 py-3 sm:px-10 sm:py-4 font-heading font-semibold rounded-lg bg-primary text-white hover:bg-opacity-90 transition-all duration-300 hover:scale-105 shadow-lg"
+          >
+            Get More Information
+          </a>
+        </div>
+
+        <div class="relative h-64 sm:h-80 lg:h-96 rounded-2xl overflow-hidden shadow-2xl">
+          <img
+            src={service.data.heroImage || 'https://images.pexels.com/photos/1599761/pexels-photo-1599761.jpeg?auto=compress&cs=tinysrgb&w=1920'}
+            alt={service.data.title}
+            class="w-full h-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-tr from-primary/20 to-transparent" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Description Section -->
+  <section class="w-full py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto prose prose-lg prose-primary">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Grid Section -->
+  {service.data.features && service.data.features.length > 0 && (
+    <section class="w-full py-12 sm:py-16 lg:py-20 bg-muted">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 sm:mb-16">
+          <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-4">
+            Why Choose Our Service
+          </h2>
+          <p class="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
+            Experience the best in quality and service
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {service.data.features.map((feature: string) => (
+            <div class="bg-card border border-border rounded-xl p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
+              <div class="flex items-start gap-4">
+                <div class="flex-shrink-0">
+                  <div class="flex items-center justify-center h-12 w-12 rounded-md bg-primary text-white">
+                    <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                </div>
+                <div>
+                  <p class="font-body text-foreground font-semibold">{feature}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Process/How It Works Section -->
+  {service.data.process && service.data.process.length > 0 && (
+    <section class="w-full py-12 sm:py-16 lg:py-20 bg-background">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 sm:mb-16">
+          <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-4">
+            How It Works
+          </h2>
+          <p class="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
+            Our proven process ensures a seamless experience from start to finish
+          </p>
+        </div>
+
+        <div class="max-w-4xl mx-auto">
+          {service.data.process.map((step: any, index: number) => (
+            <div key={index} class="flex gap-6 sm:gap-8 mb-8 sm:mb-12 last:mb-0">
+              <div class="flex-shrink-0">
+                <div class="flex items-center justify-center h-16 w-16 rounded-full bg-gradient-to-br from-primary to-secondary text-white font-heading font-bold text-xl shadow-lg">
+                  {step.step}
+                </div>
+              </div>
+
+              <div class="flex-1 pt-2">
+                <h3 class="font-heading font-bold text-primary text-xl sm:text-2xl mb-2">
+                  {step.title}
+                </h3>
+                <p class="font-body text-muted-foreground text-base sm:text-lg leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+
+              {index < service.data.process.length - 1 && (
+                <div class="absolute left-8 top-24 w-1 h-12 bg-gradient-to-b from-primary to-transparent" />
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Gallery Section -->
+  {service.data.gallery && service.data.gallery.length > 0 && (
+    <section class="w-full py-12 sm:py-16 lg:py-20 bg-muted">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 sm:mb-16">
+          <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-4">
+            Gallery
+          </h2>
+          <p class="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
+            Visual highlights of our service in action
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {service.data.gallery.map((image: string) => (
+            <div key={image} class="relative h-64 sm:h-72 rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300 group">
+              <img
+                src={image}
+                alt="Gallery image"
+                class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Related Tours Section -->
+  {relatedTours.length > 0 && (
+    <section class="w-full py-12 sm:py-16 lg:py-20 bg-background">
+      <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 sm:mb-16">
+          <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-4">
+            Explore Our Tours
+          </h2>
+          <p class="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
+            Popular tours featuring this service
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          {relatedTours.map(tour => (
+            <TourCard
+              key={tour.slug}
+              slug={tour.slug}
+              title={tour.data.title}
+              description={tour.data.description}
+              image={tour.data.heroImage}
+              duration={tour.data.duration}
+              price={tour.data.price}
+              priceUnit={tour.data.priceUnit}
+              difficulty={tour.data.difficulty}
+            />
+          ))}
+        </div>
+
+        <div class="text-center mt-8 sm:mt-12">
+          <a
+            href="/tours"
+            class="inline-block px-8 py-3 sm:px-10 sm:py-4 font-heading font-semibold rounded-lg bg-secondary text-white hover:bg-opacity-90 transition-all duration-300 hover:scale-105"
+          >
+            View All Tours
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- FAQ Section -->
+  {service.data.faq && service.data.faq.length > 0 && (
+    <section class="w-full py-12 sm:py-16 lg:py-20 bg-muted">
+      <FAQAccordion
+        title="Frequently Asked Questions"
+        description="Get answers to common questions about our service"
+        faqs={service.data.faq}
+      />
+    </section>
+  )}
+
+  <!-- Inquiry Form Section -->
+  <section id="inquiry-form" class="w-full py-12 sm:py-16 lg:py-20 bg-background scroll-mt-20">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-2xl mx-auto">
+        <div class="text-center mb-8 sm:mb-12">
+          <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-4">
+            Get More Information
+          </h2>
+          <p class="font-body text-muted-foreground text-lg">
+            Fill out the form below and our team will be in touch shortly
+          </p>
+        </div>
+
+        <div class="bg-card border border-border rounded-xl shadow-lg p-6 sm:p-8">
+          <InquiryForm
+            client:load
+            tourName={service.data.title}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <CTASection
+    title="Ready to Experience This Service?"
+    description="Contact our team today to discuss how we can help bring your travel dreams to life."
+    ctaText="Contact Us"
+    ctaUrl="/contact"
+    secondaryCtaText="View More Services"
+    secondaryCtaUrl="/services"
+  />
+</BaseLayout>
+
+<style>
+  .prose-primary {
+    --tw-prose-headings: var(--color-primary);
+    --tw-prose-links: var(--color-secondary);
+  }
+</style>

@@ -1,0 +1,352 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+
+const breadcrumbItems = [
+  { label: 'Home', href: '/' },
+  { label: 'About Us' },
+];
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'SueKay Tours & Travel',
+    description: 'Premium East African travel company specializing in safaris, team building, corporate travel, and transport services.',
+    url: 'https://suekaytours.com',
+    foundingDate: '2015',
+    areaServed: ['Kenya', 'Tanzania', 'Uganda', 'Rwanda'],
+  },
+];
+---
+
+<BaseLayout
+  title="About Us"
+  description="Learn about SueKay Tours & Travel's mission, vision, values, and the team behind East Africa's premier travel experiences."
+  schema={schema}
+>
+  <!-- Breadcrumbs -->
+  <Breadcrumbs items={breadcrumbItems} />
+
+  <!-- Hero Section -->
+  <HeroSection
+    title="About SueKay Tours & Travel"
+    subtitle="Crafting unforgettable East African experiences since 2015"
+    image="https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1920"
+    minHeight="min-h-[60vh]"
+  />
+
+  <!-- Company Story Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="max-w-4xl mx-auto">
+        <div class="mb-12 sm:mb-16">
+          <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl mb-6">
+            Our Story
+          </h2>
+          <p class="font-body text-muted-foreground text-lg leading-relaxed mb-4">
+            SueKay Tours & Travel was founded on a simple yet powerful vision: to share the magic of East Africa with the world while creating meaningful employment and supporting local communities. What started as a small operation has grown into one of the region's most trusted and innovative travel companies.
+          </p>
+          <p class="font-body text-muted-foreground text-lg leading-relaxed mb-4">
+            Our name, SueKay, reflects our commitment to quality (Sue) and knowledge (Kay) – two pillars that guide everything we do. Whether you're embarking on a thrilling safari, seeking a team-building adventure, or arranging corporate travel logistics, we bring the same passion and attention to detail to every experience.
+          </p>
+          <p class="font-body text-muted-foreground text-lg leading-relaxed">
+            Today, we're proud to have served thousands of satisfied travelers from around the globe, earning a reputation for exceptional service, expert knowledge, and unforgettable African experiences.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10">
+          <div class="bg-primary/10 rounded-lg p-6 sm:p-8">
+            <h3 class="font-heading font-bold text-primary text-2xl sm:text-3xl mb-4">
+              Our Mission
+            </h3>
+            <p class="font-body text-muted-foreground text-base sm:text-lg leading-relaxed">
+              To deliver transformative travel experiences across East Africa that inspire wonder, foster cultural understanding, and create positive impact for local communities and wildlife conservation.
+            </p>
+          </div>
+
+          <div class="bg-secondary/10 rounded-lg p-6 sm:p-8">
+            <h3 class="font-heading font-bold text-secondary text-2xl sm:text-3xl mb-4">
+              Our Vision
+            </h3>
+            <p class="font-body text-muted-foreground text-base sm:text-lg leading-relaxed">
+              To be the most trusted and innovative travel partner in East Africa, known for excellence, sustainability, and genuine connections between travelers and the people and places they visit.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Team Values Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Our Core Values
+        </h2>
+        <p class="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
+          These values guide every decision we make and every experience we create
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div class="bg-card rounded-lg p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow text-center">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-primary text-xl sm:text-2xl mb-3">
+            Expertise
+          </h3>
+          <p class="text-muted-foreground">
+            Deep knowledge of destinations, wildlife, and travel logistics built through years of experience and continuous learning.
+          </p>
+        </div>
+
+        <div class="bg-card rounded-lg p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow text-center">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-secondary text-xl sm:text-2xl mb-3">
+            Reliability
+          </h3>
+          <p class="text-muted-foreground">
+            Consistent, dependable service that exceeds expectations and honors our commitments to every client.
+          </p>
+        </div>
+
+        <div class="bg-card rounded-lg p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow text-center">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-primary text-xl sm:text-2xl mb-3">
+            Innovation
+          </h3>
+          <p class="text-muted-foreground">
+            Forward-thinking approaches that create unique experiences and adapt to evolving traveler needs.
+          </p>
+        </div>
+
+        <div class="bg-card rounded-lg p-6 sm:p-8 shadow-md hover:shadow-lg transition-shadow text-center">
+          <div class="flex justify-center mb-4">
+            <div class="w-16 h-16 bg-secondary/20 rounded-full flex items-center justify-center">
+              <svg class="w-8 h-8 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="font-heading font-bold text-secondary text-xl sm:text-2xl mb-3">
+            Passion
+          </h3>
+          <p class="text-muted-foreground">
+            Genuine love for Africa and commitment to sharing its wonders with travelers from around the world.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fleet/Vehicles Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-background">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="text-center mb-10 sm:mb-16">
+        <h2 class="font-heading font-bold text-primary text-3xl sm:text-4xl lg:text-5xl mb-4">
+          Our Fleet
+        </h2>
+        <p class="font-body text-muted-foreground text-lg max-w-2xl mx-auto">
+          Modern, well-maintained vehicles ensuring comfort and safety on every journey
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div class="bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8m-4-8v8m-6-4h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+            </svg>
+          </div>
+          <div class="p-6">
+            <h3 class="font-heading font-bold text-primary text-lg sm:text-xl mb-2">
+              Mercedes Benz Tourismo
+            </h3>
+            <p class="text-muted-foreground text-sm">
+              Luxury coach buses for large group tours with premium comfort and entertainment systems.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Capacity: 45-60 passengers
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Air conditioning & WiFi
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16h8m-4-8v8m-6-4h12a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2v-6a2 2 0 012-2z" />
+            </svg>
+          </div>
+          <div class="p-6">
+            <h3 class="font-heading font-bold text-secondary text-lg sm:text-xl mb-2">
+              Toyota Coaster
+            </h3>
+            <p class="text-muted-foreground text-sm">
+              Mid-size safari coaches ideal for intimate group experiences with excellent road handling.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Capacity: 25-30 passengers
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Pop-up roof windows
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-primary to-secondary flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 4a2 2 0 012-2h8a2 2 0 012 2v4l-4-2-4 2V4zm0 0h12a2 2 0 012 2v10a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2z" />
+            </svg>
+          </div>
+          <div class="p-6">
+            <h3 class="font-heading font-bold text-primary text-lg sm:text-xl mb-2">
+              Toyota Landcruiser
+            </h3>
+            <p class="text-muted-foreground text-sm">
+              Iconic 4x4 vehicles perfect for off-road safari adventures and rough terrain exploration.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Capacity: 4-6 passengers
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Off-road capability
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="bg-card rounded-lg shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+          <div class="h-48 bg-gradient-to-br from-secondary to-primary flex items-center justify-center">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+            </svg>
+          </div>
+          <div class="p-6">
+            <h3 class="font-heading font-bold text-secondary text-lg sm:text-xl mb-2">
+              Toyota Hiace
+            </h3>
+            <p class="text-muted-foreground text-sm">
+              Versatile vans for airport transfers, small group tours, and flexible transport needs.
+            </p>
+            <ul class="mt-4 space-y-2 text-sm text-muted-foreground">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Capacity: 8-15 passengers
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 text-secondary" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                </svg>
+                Flexible seating
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats/Highlights Section -->
+  <section class="py-12 sm:py-16 lg:py-20 bg-muted">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+        <div class="text-center">
+          <div class="text-4xl sm:text-5xl font-bold text-primary mb-2">
+            10k+
+          </div>
+          <p class="text-muted-foreground font-heading text-lg">
+            Happy Travelers
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl sm:text-5xl font-bold text-secondary mb-2">
+            500+
+          </div>
+          <p class="text-muted-foreground font-heading text-lg">
+            Unique Itineraries
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl sm:text-5xl font-bold text-primary mb-2">
+            4
+          </div>
+          <p class="text-muted-foreground font-heading text-lg">
+            Countries Served
+          </p>
+        </div>
+        <div class="text-center">
+          <div class="text-4xl sm:text-5xl font-bold text-secondary mb-2">
+            9+
+          </div>
+          <p class="text-muted-foreground font-heading text-lg">
+            Years of Excellence
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <CTASection
+    title="Experience Our Difference"
+    description="Ready to explore East Africa with a team you can trust? Contact us today to start planning your adventure."
+    ctaText="Plan Your Trip"
+    ctaUrl="/contact"
+    secondaryCtaText="Browse Tours"
+    secondaryCtaUrl="/tours"
+    variant="primary"
+  />
+</BaseLayout>
+
+<style>
+</style>

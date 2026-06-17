@@ -1,0 +1,194 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import HeroSection from '@/components/hero/HeroSection.astro';
+import TourCard from '@/components/content/TourCard.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import { SafariFinderWizard } from '@/components/forms/SafariFinderWizard.tsx';
+
+const tours = await getCollection('tours');
+const sortedTours = tours.sort((a, b) => a.data.title.localeCompare(b.data.title));
+
+// Extract unique categories
+const categories = Array.from(
+  new Set(sortedTours.map(tour => tour.data.category || 'Safari'))
+).sort();
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Tours', href: '/tours' },
+];
+
+const seoTitle = 'Safari Tours & African Adventures - SueKay Tours';
+const seoDescription = 'Discover unforgettable safari experiences in East Africa. From wildlife safaris to mountain adventures, find your perfect tour package.';
+---
+
+<BaseLayout title={seoTitle} description={seoDescription}>
+  <main class="w-full">
+    <!-- Hero Section -->
+    <HeroSection
+      title="Unforgettable Safari Experiences"
+      subtitle="Curated adventures across East Africa's most spectacular destinations"
+      backgroundImage="https://images.pexels.com/photos/1323550/pexels-photo-1323550.jpeg?auto=compress&cs=tinysrgb&w=1920"
+      height="large"
+    />
+
+    <div class="bg-background border-b border-border">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <Breadcrumbs items={breadcrumbs} />
+      </div>
+    </div>
+
+    <div class="bg-muted">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-20">
+        <div class="mb-12">
+          <h2 class="text-xl font-semibold text-foreground mb-6">Filter by Category</h2>
+          <div class="flex flex-wrap gap-3">
+            <button
+              class="px-6 py-3 rounded-lg bg-primary text-white font-semibold transition-all hover:shadow-lg"
+              data-filter="all"
+              aria-current="page"
+            >
+              All Tours ({sortedTours.length})
+            </button>
+            {categories.map(category => {
+              const count = sortedTours.filter(t => (t.data.category || 'Safari') === category).length;
+              return (
+                <button
+                  class="px-6 py-3 rounded-lg bg-card text-foreground font-semibold border-2 border-border transition-all hover:border-secondary hover:text-secondary"
+                  data-filter={category}
+                >
+                  {category} ({count})
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        <div class="mb-16">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="tours-grid">
+            {sortedTours.map(tour => (
+              <article class="tour-card bg-card border border-border rounded-lg shadow hover:shadow-lg transition-shadow overflow-hidden" data-category={tour.data.category || 'Safari'}>
+                <TourCard
+                  slug={tour.slug}
+                  title={tour.data.title}
+                  description={tour.data.description}
+                  image={tour.data.heroImage}
+                  duration={tour.data.duration}
+                  price={tour.data.price}
+                  priceUnit={tour.data.priceUnit}
+                  difficulty={tour.data.difficulty}
+                />
+              </article>
+            ))}
+          </div>
+
+          {sortedTours.length === 0 && (
+            <div class="text-center py-12">
+              <p class="text-muted-foreground text-lg">No tours found. Please check back soon!</p>
+            </div>
+          )}
+        </div>
+
+        <div class="bg-gradient-to-r from-primary to-secondary rounded-lg shadow-lg p-8 lg:p-12 text-white mb-16">
+          <h2 class="text-3xl font-bold mb-3">Can't Find Your Perfect Tour?</h2>
+          <p class="text-lg mb-8 text-blue-50">Use our Safari Finder Wizard to discover tours tailored to your preferences.</p>
+          <SafariFinderWizard />
+        </div>
+
+        <div class="bg-card border border-border rounded-lg shadow-lg p-8 lg:p-12 grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div>
+            <h2 class="text-3xl font-bold text-foreground mb-4">Custom Safari Packages</h2>
+            <p class="text-muted-foreground mb-6 leading-relaxed">
+              Don't see exactly what you're looking for? Our expert team can customize any tour to match your interests, budget, and schedule. From small group adventures to exclusive private safaris, we'll create your dream African experience.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+              <a
+                href="/contact"
+                class="inline-flex items-center justify-center px-8 py-3 bg-primary hover:bg-primary/90 text-white font-semibold rounded-lg transition-colors"
+              >
+                Plan Your Tour
+              </a>
+              <a
+                href="/destinations"
+                class="inline-flex items-center justify-center px-8 py-3 bg-secondary/20 hover:bg-secondary/30 text-secondary font-semibold rounded-lg border-2 border-secondary transition-colors"
+              >
+                Explore Destinations
+              </a>
+            </div>
+          </div>
+          <div class="hidden md:block">
+            <img
+              src="https://images.pexels.com/photos/2398220/pexels-photo-2398220.jpeg?auto=compress&cs=tinysrgb&w=600"
+              alt="Custom Safari Tours"
+              class="rounded-lg shadow-lg w-full h-64 object-cover"
+            />
+          </div>
+        </div>
+
+        <div class="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="text-5xl mb-4">🌍</div>
+            <h3 class="text-xl font-semibold text-foreground mb-2">Expert Local Guides</h3>
+            <p class="text-muted-foreground">
+              Our guides have decades of combined experience and deep knowledge of East African wildlife and culture.
+            </p>
+          </div>
+          <div class="text-center">
+            <div class="text-5xl mb-4">⭐</div>
+            <h3 class="text-xl font-semibold text-foreground mb-2">Exceptional Service</h3>
+            <p class="text-muted-foreground">
+              With a 4.9-star rating from over 1000 happy travelers, we're committed to exceeding expectations.
+            </p>
+          </div>
+          <div class="text-center">
+            <div class="text-5xl mb-4">🛡️</div>
+            <h3 class="text-xl font-semibold text-foreground mb-2">Safe & Responsible</h3>
+            <p class="text-muted-foreground">
+              We follow the highest safety standards and prioritize ethical, sustainable travel practices.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Category filtering functionality
+    const filterButtons = document.querySelectorAll('[data-filter]');
+    const tourCards = document.querySelectorAll('.tour-card');
+
+    filterButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active button state
+        filterButtons.forEach(btn => {
+          btn.classList.remove('bg-primary', 'text-white', 'shadow-lg');
+          btn.classList.add('bg-card', 'text-foreground', 'border-2', 'border-border');
+          btn.removeAttribute('aria-current');
+        });
+        button.classList.add('bg-primary', 'text-white', 'shadow-lg');
+        button.classList.remove('bg-card', 'text-foreground', 'border-2', 'border-border');
+        button.setAttribute('aria-current', 'page');
+
+        // Filter tours
+        const filter = button.getAttribute('data-filter');
+        tourCards.forEach(card => {
+          const category = card.getAttribute('data-category');
+          if (filter === 'all' || category === filter) {
+            card.style.display = '';
+            card.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
+
+  <style>
+    [data-filter] {
+      @apply cursor-pointer;
+    }
+  </style>
+</BaseLayout>

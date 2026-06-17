@@ -1,0 +1,173 @@
+backend:
+  name: github
+  repo: suekay/suekay-tours
+  branch: main
+
+media_folder: public/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: blog
+    label: Blog Posts
+    folder: src/content/blog
+    create: true
+    delete: true
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Publish Date, name: pubDate, widget: datetime, date_format: YYYY-MM-DD, time_format: false }
+      - { label: Updated Date, name: updatedDate, widget: datetime, date_format: YYYY-MM-DD, time_format: false, required: false }
+      - { label: Author, name: author, widget: string, default: "SueKay Tours" }
+      - { label: Hero Image, name: heroImage, widget: image, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Category, name: category, widget: select, options: ["safari", "travel-tips", "destinations", "corporate", "adventure", "culture"], default: "safari" }
+      - { label: Draft, name: draft, widget: boolean, default: false }
+      - { label: Featured, name: featured, widget: boolean, default: false }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: destinations
+    label: Destinations
+    folder: src/content/destinations
+    create: true
+    delete: true
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Hero Image, name: heroImage, widget: image }
+      - { label: Gallery, name: gallery, widget: list, field: { label: Image, name: image, widget: image }, required: false }
+      - { label: Region, name: region, widget: select, options: ["kenya", "tanzania", "uganda", "rwanda"] }
+      - { label: Highlights, name: highlights, widget: list, required: false }
+      - { label: Best Time to Visit, name: bestTimeToVisit, widget: string }
+      - { label: Activities, name: activities, widget: list, required: false }
+      - { label: Featured, name: featured, widget: boolean, default: false }
+      - label: Accommodation
+        name: accommodation
+        widget: list
+        required: false
+        fields:
+          - { label: Name, name: name, widget: string }
+          - { label: Type, name: type, widget: select, options: ["luxury", "mid-range", "budget"] }
+          - { label: Description, name: description, widget: text }
+      - label: FAQ
+        name: faq
+        widget: list
+        required: false
+        fields:
+          - { label: Question, name: question, widget: string }
+          - { label: Answer, name: answer, widget: text }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: tours
+    label: Tours
+    folder: src/content/tours
+    create: true
+    delete: true
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Hero Image, name: heroImage, widget: image }
+      - { label: Gallery, name: gallery, widget: list, field: { label: Image, name: image, widget: image }, required: false }
+      - { label: Destination, name: destination, widget: string }
+      - { label: Duration, name: duration, widget: string }
+      - { label: Price, name: price, widget: number, value_type: int }
+      - { label: Currency, name: priceUnit, widget: string, default: "USD" }
+      - { label: Group Size, name: groupSize, widget: string }
+      - { label: Difficulty, name: difficulty, widget: select, options: ["easy", "moderate", "challenging"] }
+      - { label: Category, name: category, widget: select, options: ["safari", "beach", "corporate", "adventure", "gorilla-trekking", "day-trip"], default: "safari" }
+      - { label: Featured, name: featured, widget: boolean, default: false }
+      - { label: Departure Dates, name: departureDates, widget: list, required: false }
+      - { label: Inclusions, name: inclusions, widget: list }
+      - { label: Exclusions, name: exclusions, widget: list }
+      - { label: Related Tours, name: relatedTours, widget: list, required: false }
+      - label: Itinerary
+        name: itinerary
+        widget: list
+        fields:
+          - { label: Day, name: day, widget: number, value_type: int }
+          - { label: Title, name: title, widget: string }
+          - { label: Description, name: description, widget: text }
+          - { label: Accommodation, name: accommodation, widget: string, required: false }
+          - { label: Meals, name: meals, widget: string, required: false }
+      - label: FAQ
+        name: faq
+        widget: list
+        required: false
+        fields:
+          - { label: Question, name: question, widget: string }
+          - { label: Answer, name: answer, widget: text }
+      - { label: Body, name: body, widget: markdown }
+
+  - name: testimonials
+    label: Testimonials
+    folder: src/content/testimonials
+    create: true
+    delete: true
+    extension: json
+    format: json
+    slug: "{{slug}}"
+    fields:
+      - { label: Author, name: author, widget: string }
+      - { label: Role, name: role, widget: string, required: false }
+      - { label: Company, name: company, widget: string, required: false }
+      - { label: Content, name: content, widget: text }
+      - { label: Rating, name: rating, widget: number, value_type: int, min: 1, max: 5 }
+      - { label: Avatar, name: avatar, widget: image, required: false }
+      - { label: Tour Name, name: tourName, widget: string, required: false }
+      - { label: Date, name: date, widget: datetime, date_format: YYYY-MM-DD, time_format: false }
+      - { label: Featured, name: featured, widget: boolean, default: false }
+
+  - name: faqs
+    label: FAQs
+    folder: src/content/faqs
+    create: true
+    delete: true
+    extension: json
+    format: json
+    slug: "{{slug}}"
+    fields:
+      - { label: Question, name: question, widget: string }
+      - { label: Answer, name: answer, widget: text }
+      - { label: Category, name: category, widget: select, options: ["safaris", "corporate", "transport", "general", "bookings"] }
+      - { label: Order, name: order, widget: number, value_type: int, default: 0 }
+
+  - name: services
+    label: Services
+    folder: src/content/services
+    create: true
+    delete: true
+    extension: mdx
+    format: frontmatter
+    slug: "{{slug}}"
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Description, name: description, widget: text }
+      - { label: Hero Image, name: heroImage, widget: image }
+      - { label: Icon, name: icon, widget: string }
+      - { label: Features, name: features, widget: list }
+      - { label: Gallery, name: gallery, widget: list, field: { label: Image, name: image, widget: image }, required: false }
+      - { label: Featured, name: featured, widget: boolean, default: false }
+      - label: Process
+        name: process
+        widget: list
+        required: false
+        fields:
+          - { label: Step, name: step, widget: number, value_type: int }
+          - { label: Title, name: title, widget: string }
+          - { label: Description, name: description, widget: text }
+      - label: FAQ
+        name: faq
+        widget: list
+        required: false
+        fields:
+          - { label: Question, name: question, widget: string }
+          - { label: Answer, name: answer, widget: text }
+      - { label: Body, name: body, widget: markdown }

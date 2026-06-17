@@ -1,0 +1,96 @@
+---
+import '@/styles/globals.css';
+import Header from '@/components/layout/Header.astro';
+import Footer from '@/components/layout/Footer.astro';
+import WhatsAppButton from '@/components/conversion/WhatsAppButton.astro';
+import StickyMobileCTA from '@/components/conversion/StickyMobileCTA.astro';
+
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  url?: string;
+  type?: string;
+  schema?: object[];
+  hideHeader?: boolean;
+  hideFooter?: boolean;
+}
+
+const {
+  title,
+  description = 'SueKay Tours & Travel - Premium East African safaris, corporate travel, team building, and transport services. Explore Kenya, Tanzania, Uganda & Rwanda.',
+  image = '/images/og-default.webp',
+  url,
+  type = 'website',
+  schema = [],
+  hideHeader = false,
+  hideFooter = false,
+} = Astro.props;
+
+const canonicalURL = url || new URL(Astro.url.pathname, Astro.site).href;
+const fullTitle = title === 'Home' ? 'SueKay Tours & Travel | East African Safaris & Travel' : `${title} | SueKay Tours & Travel`;
+---
+
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content={type} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(image, Astro.site).href} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:site_name" content="SueKay Tours & Travel" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(image, Astro.site).href} />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Lexend:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Generator -->
+    <meta name="generator" content={Astro.generator} />
+
+    <!-- Theme script (prevents flash) -->
+    <script is:inline>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      document.documentElement.classList.toggle('dark', theme === 'dark');
+    </script>
+
+    <!-- Schema.org JSON-LD -->
+    {schema.map((s) => (
+      <script type="application/ld+json" set:html={JSON.stringify(s)} />
+    ))}
+  </head>
+  <body class="min-h-screen bg-background text-foreground antialiased">
+    {!hideHeader && <Header />}
+    <main>
+      <slot />
+    </main>
+    {!hideFooter && <Footer />}
+    <WhatsAppButton />
+    <StickyMobileCTA />
+  </body>
+</html>

@@ -1,0 +1,108 @@
+---
+interface ItineraryItem {
+  day: number;
+  title: string;
+  description: string;
+  accommodation?: string;
+  meals?: string;
+}
+
+interface Props {
+  itinerary: ItineraryItem[];
+}
+
+const { itinerary } = Astro.props;
+---
+
+<section class="w-full py-8 sm:py-12">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="hidden md:block relative">
+        <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-gradient-to-b from-primary to-secondary -translate-x-1/2" />
+
+        <div class="space-y-10">
+          {itinerary.map((item, index) => (
+            <div key={index} class={`flex gap-8 ${index % 2 === 0 ? 'flex-row' : 'flex-row-reverse'}`}>
+              <div class="w-1/2">
+                <div class={`bg-card rounded-lg shadow-md p-6 h-full border border-border ${index % 2 === 0 ? 'text-right' : 'text-left'}`}>
+                  <h3 class="font-heading font-bold text-primary text-xl mb-2">
+                    {item.title}
+                  </h3>
+                  <p class="text-muted-foreground mb-4">
+                    {item.description}
+                  </p>
+
+                  <div class={`flex gap-2 flex-wrap ${index % 2 === 0 ? 'justify-end' : 'justify-start'}`}>
+                    {item.accommodation && (
+                      <span class="inline-block bg-secondary/20 text-secondary text-xs font-semibold px-3 py-1 rounded-full">
+                        {item.accommodation}
+                      </span>
+                    )}
+                    {item.meals && (
+                      <span class="inline-block bg-primary/20 text-primary text-xs font-semibold px-3 py-1 rounded-full">
+                        {item.meals}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-auto flex items-start justify-center">
+                <div class="bg-primary text-white rounded-full w-16 h-16 flex items-center justify-center shadow-lg transform -translate-y-1">
+                  <div class="text-center">
+                    <p class="font-heading font-bold text-lg">Day</p>
+                    <p class="font-bold text-2xl">{item.day}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="w-1/2" />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="md:hidden space-y-6">
+        {itinerary.map((item, index) => (
+          <div key={index} class="flex gap-6">
+            <div class="flex-shrink-0">
+              <div class="bg-primary text-white rounded-full w-14 h-14 flex items-center justify-center shadow-md">
+                <div class="text-center">
+                  <p class="font-heading font-bold text-xs">Day</p>
+                  <p class="font-bold text-lg">{item.day}</p>
+                </div>
+              </div>
+              {index < itinerary.length - 1 && (
+                <div class="w-1 h-20 bg-gradient-to-b from-secondary to-border mx-auto mt-2" />
+              )}
+            </div>
+
+            <div class="flex-1 pb-4">
+              <div class="bg-card rounded-lg shadow-md p-4 sm:p-5 border border-border">
+                <h3 class="font-heading font-bold text-primary text-lg sm:text-xl mb-2">
+                  {item.title}
+                </h3>
+                <p class="text-muted-foreground text-sm sm:text-base mb-3">
+                  {item.description}
+                </p>
+
+                <div class="flex flex-wrap gap-2">
+                  {item.accommodation && (
+                    <span class="inline-block bg-secondary/20 text-secondary text-xs font-semibold px-2 py-1 rounded-full">
+                      {item.accommodation}
+                    </span>
+                  )}
+                  {item.meals && (
+                    <span class="inline-block bg-primary/20 text-primary text-xs font-semibold px-2 py-1 rounded-full">
+                      {item.meals}
+                    </span>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>

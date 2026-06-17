@@ -1,0 +1,274 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/content/Breadcrumbs.astro';
+import FAQAccordion from '@/components/content/FAQAccordion.astro';
+import CTASection from '@/components/content/CTASection.astro';
+import TourCard from '@/components/content/TourCard.astro';
+import { InquiryForm } from '@/components/forms/InquiryForm.tsx';
+import ItineraryTimeline from '@/components/content/ItineraryTimeline.astro';
+
+export async function getStaticPaths() {
+  const tours = await getCollection('tours');
+  return tours.map(tour => ({
+    params: { slug: tour.slug },
+    props: { tour },
+  }));
+}
+
+interface Props {
+  tour: any;
+}
+
+const { tour } = Astro.props;
+const { Content } = await render(tour);
+
+const allTours = await getCollection('tours');
+const relatedTours = allTours
+  .filter(t =>
+    t.slug !== tour.slug &&
+    (t.data.destination === tour.data.destination ||
+      t.data.category === tour.data.category)
+  )
+  .slice(0, 3);
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Tours', href: '/tours' },
+  { label: tour.data.title },
+];
+
+const itinerary = tour.data.itinerary || [];
+const inclusions = tour.data.inclusions || [];
+const exclusions = tour.data.exclusions || [];
+const gallery = tour.data.gallery || [];
+const departureDates = tour.data.departureDates || [];
+const faq = tour.data.faq || [];
+const difficulty = tour.data.difficulty || 'easy';
+const groupSize = tour.data.groupSize || '2-6 people';
+const price = tour.data.price || 0;
+const priceUnit = tour.data.priceUnit || 'USD';
+
+const schema = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'TouristTrip',
+    name: tour.data.title,
+    description: tour.data.description,
+    image: tour.data.heroImage,
+    duration: tour.data.duration,
+    offers: {
+      '@type': 'Offer',
+      price: price,
+      priceCurrency: priceUnit,
+    },
+    touristDestination: {
+      '@type': 'Place',
+      name: tour.data.destination,
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'SueKay Tours & Travel',
+      url: 'https://suekaytours.com',
+    },
+  },
+];
+---
+
+<BaseLayout title={tour.data.title} description={tour.data.description} schema={schema}>
+  <Breadcrumbs items={breadcrumbs} />
+
+  <section class="relative h-[60vh] min-h-[400px] overflow-hidden">
+    <div
+      class="absolute inset-0 bg-cover bg-center"
+      style={`background-image: url('${tour.data.heroImage}')`}
+      role="img"
+      aria-label={tour.data.title}
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-primary-900/80 via-primary-900/40 to-transparent" />
+    <div class="relative z-10 h-full flex items-end">
+      <div class="container mx-auto px-4 lg:px-8 pb-10">
+        <div class="flex flex-wrap gap-3 mb-4">
+          <span class="bg-secondary text-secondary-foreground px-4 py-2 rounded-full font-heading font-semibold text-sm">
+            {tour.data.category || 'Safari'}
+          </span>
+          <span class="bg-primary text-primary-foreground px-4 py-2 rounded-full font-heading font-semibold text-sm">
+            {tour.data.duration}
+          </span>
+          <span class="bg-secondary/80 text-secondary-foreground px-4 py-2 rounded-full font-heading font-semibold text-sm">
+            From {new Intl.NumberFormat('en-US', { style: 'currency', currency: priceUnit, minimumFractionDigits: 0 }).format(price)}
+          </span>
+        </div>
+        <h1 class="font-heading font-bold text-white text-4xl lg:text-5xl mb-2">{tour.data.title}</h1>
+        <p class="text-white/80 text-lg">{tour.data.destination}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-8 border-b bg-background">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+        <div class="text-center p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <p class="text-xs text-muted-foreground mb-1">Duration</p>
+          <p class="text-lg font-heading font-bold text-primary">{tour.data.duration}</p>
+        </div>
+        <div class="text-center p-4 rounded-lg bg-secondary/5 border border-secondary/20">
+          <p class="text-xs text-muted-foreground mb-1">Group Size</p>
+          <p class="text-lg font-heading font-bold text-secondary">{groupSize}</p>
+        </div>
+        <div class="text-center p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <p class="text-xs text-muted-foreground mb-1">Difficulty</p>
+          <p class="text-lg font-heading font-bold text-primary capitalize">{difficulty}</p>
+        </div>
+        <div class="text-center p-4 rounded-lg bg-secondary/5 border border-secondary/20">
+          <p class="text-xs text-muted-foreground mb-1">Price</p>
+          <p class="text-lg font-heading font-bold text-secondary">{new Intl.NumberFormat('en-US', { style: 'currency', currency: priceUnit, minimumFractionDigits: 0 }).format(price)}</p>
+        </div>
+        <div class="text-center p-4 rounded-lg bg-primary/5 border border-primary/20">
+          <p class="text-xs text-muted-foreground mb-1">Destination</p>
+          <p class="text-sm font-heading font-bold text-primary">{tour.data.destination}</p>
+        </div>
+        <div class="text-center p-4 rounded-lg bg-secondary/5 border border-secondary/20">
+          <p class="text-xs text-muted-foreground mb-1">Category</p>
+          <p class="text-sm font-heading font-bold text-secondary capitalize">{tour.data.category || 'safari'}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-12 lg:py-16 bg-muted">
+    <div class="container mx-auto px-4 lg:px-8">
+      <h2 class="font-heading font-bold text-foreground text-3xl mb-6">Overview</h2>
+      <div class="prose prose-lg max-w-none text-muted-foreground">
+        <Content />
+      </div>
+    </div>
+  </section>
+
+  {itinerary.length > 0 && (
+    <section class="py-12 lg:py-16 bg-background">
+      <div class="container mx-auto px-4 lg:px-8">
+        <h2 class="font-heading font-bold text-foreground text-3xl mb-10">Detailed Itinerary</h2>
+        <ItineraryTimeline itinerary={itinerary} />
+      </div>
+    </section>
+  )}
+
+  <section class="py-12 lg:py-16 bg-muted">
+    <div class="container mx-auto px-4 lg:px-8">
+      <h2 class="font-heading font-bold text-foreground text-3xl mb-10 text-center">What's Included</h2>
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div>
+          <h3 class="font-heading font-semibold text-foreground text-xl mb-6 flex items-center gap-2">
+            <span class="text-green-500 text-xl">&#10003;</span> Inclusions
+          </h3>
+          <ul class="space-y-3">
+            {inclusions.map((item: string) => (
+              <li class="flex items-start gap-3">
+                <span class="text-green-500 mt-0.5">&#10003;</span>
+                <span class="text-muted-foreground">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div>
+          <h3 class="font-heading font-semibold text-foreground text-xl mb-6 flex items-center gap-2">
+            <span class="text-red-500 text-xl">&#10005;</span> Exclusions
+          </h3>
+          <ul class="space-y-3">
+            {exclusions.map((item: string) => (
+              <li class="flex items-start gap-3">
+                <span class="text-red-500 mt-0.5">&#10005;</span>
+                <span class="text-muted-foreground">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  {gallery.length > 0 && (
+    <section class="py-12 lg:py-16 bg-background">
+      <div class="container mx-auto px-4 lg:px-8">
+        <h2 class="font-heading font-bold text-foreground text-3xl mb-10">Gallery</h2>
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          {gallery.map((image: string) => (
+            <img
+              src={image}
+              alt={tour.data.title}
+              class="w-full h-48 object-cover rounded-lg shadow hover:shadow-lg transition-shadow"
+              loading="lazy"
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  {departureDates.length > 0 && (
+    <section class="py-12 lg:py-16 bg-muted">
+      <div class="container mx-auto px-4 lg:px-8">
+        <h2 class="font-heading font-bold text-foreground text-3xl mb-10">Upcoming Departures</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {departureDates.map((date: string) => (
+            <div class="bg-card rounded-lg p-6 shadow hover:shadow-lg transition-shadow border-l-4 border-secondary">
+              <p class="text-sm text-muted-foreground mb-1">Departure</p>
+              <p class="text-xl font-heading font-bold text-primary mb-4">{date}</p>
+              <a
+                href="/contact"
+                class="block text-center px-4 py-2 bg-secondary hover:bg-secondary-600 text-secondary-foreground rounded-lg font-heading font-semibold transition-colors"
+              >
+                Inquire Now
+              </a>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <FAQAccordion faqs={faq} title="Frequently Asked Questions" />
+
+  <section class="py-12 lg:py-16 bg-muted">
+    <div class="container mx-auto px-4 lg:px-8 max-w-4xl">
+      <h2 class="font-heading font-bold text-foreground text-3xl mb-4 text-center">Ready to Book?</h2>
+      <p class="text-muted-foreground text-center mb-10">
+        Have questions? Our team is ready to help you plan this amazing adventure.
+      </p>
+      <InquiryForm client:load tourName={tour.data.title} destination={tour.data.destination} />
+    </div>
+  </section>
+
+  {relatedTours.length > 0 && (
+    <section class="py-12 lg:py-16 bg-background">
+      <div class="container mx-auto px-4 lg:px-8">
+        <h2 class="font-heading font-bold text-foreground text-3xl mb-10">Related Tours</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {relatedTours.map(relatedTour => (
+            <TourCard
+              title={relatedTour.data.title}
+              slug={relatedTour.slug}
+              image={relatedTour.data.heroImage}
+              duration={relatedTour.data.duration}
+              price={relatedTour.data.price}
+              priceUnit={relatedTour.data.priceUnit}
+              destination={relatedTour.data.destination}
+              difficulty={relatedTour.data.difficulty}
+              category={relatedTour.data.category}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <CTASection
+    title="Start Planning Your Safari"
+    description="Browse our complete collection of tours or get a custom quote tailored to your preferences."
+    ctaText="View All Tours"
+    ctaUrl="/tours"
+    secondaryCtaText="Get Custom Quote"
+    secondaryCtaUrl="/contact"
+  />
+</BaseLayout>
